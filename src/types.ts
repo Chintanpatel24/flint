@@ -26,12 +26,25 @@ export interface Vault {
   folderPath?: string;
 }
 
+export interface CanvasCard {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  type: 'note' | 'text';
+  noteId?: string;
+  content?: string;
+  color?: string;
+}
+
 export interface VaultWorkspace {
   notes: Note[];
   folders: Folder[];
   openTabs: string[];
   activeNoteId: string | null;
   hasFolderHandle: boolean;
+  canvasCards?: CanvasCard[];
 }
 
 export type ViewMode = 'edit' | 'split' | 'preview';

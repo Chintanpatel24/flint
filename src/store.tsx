@@ -35,7 +35,7 @@ function normalizeAISettings(raw: unknown): AISettings {
   return merged;
 }
 
-function buildWorkspace(notes: Note[], folders: Folder[], openTabs?: string[], activeNoteId?: string | null, hasFolderHandle = false): VaultWorkspace {
+function buildWorkspace(notes: Note[], folders: Folder[], openTabs?: string[], activeNoteId?: string | null, hasFolderHandle = false, canvasCards: CanvasCard[] = []): VaultWorkspace {
   const firstNoteId = notes[0]?.id || null;
   const normalizedTabs = (openTabs || []).filter(id => notes.some(note => note.id === id));
   const fallbackTabs = normalizedTabs.length ? normalizedTabs : firstNoteId ? [firstNoteId] : [];
@@ -49,6 +49,7 @@ function buildWorkspace(notes: Note[], folders: Folder[], openTabs?: string[], a
     openTabs: fallbackTabs,
     activeNoteId: fallbackActive,
     hasFolderHandle,
+    canvasCards,
   };
 }
 
@@ -85,6 +86,7 @@ function updateCurrentWorkspace(state: AppState, updater: (workspace: VaultWorks
     updated.openTabs,
     updated.activeNoteId,
     updated.hasFolderHandle,
+    updated.canvasCards,
   );
   const nextState = {
     ...state,
@@ -121,6 +123,7 @@ function loadState(): AppState | null {
             workspace?.openTabs || (vault.id === activeVaultId ? openTabs : []),
             workspace?.activeNoteId || (vault.id === activeVaultId ? parsed.activeNoteId || null : null),
             false,
+            workspace?.canvasCards || [],
           )];
         })
       ) as Record<string, VaultWorkspace>;
@@ -437,7 +440,8 @@ type Action =
   | { type: 'UPDATE_AI_SETTINGS'; payload: Partial<AISettings> }
   | { type: 'IMPORT_NOTES'; payload: { notes: Note[]; folders: Folder[] } }
   | { type: 'SET_FOLDER_HANDLE'; payload: boolean }
-  | { type: 'CREATE_FOLDER_VAULT'; payload: { id: string; name: string; color: string; folderPath: string } };
+  | { type: 'CREATE_FOLDER_VAULT'; payload: { id: string; name: string; color: string; folderPath: string } }
+  | { type: 'UPDATE_CANVAS_CARDS'; payload: CanvasCard[] };
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -453,6 +457,7 @@ function reducer(state: AppState, action: Action): AppState {
         },
       };
     }
+    case 'UPDATE_CANVAS_CARDS': return updateCurrentWorkspace(state, workspace => ({ ...workspace, canvasCards: action.payload }));
     case 'OPEN_VAULT': {
       const vault = state.vaults.find(v => v.id === action.payload);
       if (!vault) return state;
@@ -566,11 +571,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'OPEN_TAB', payload: existing.id });
       return;
     }
+
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const yesterdayTitle = yesterday.toISOString().slice(0, 10);
+
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const tomorrowTitle = tomorrow.toISOString().slice(0, 10);
+
     const folderId = folder?.id || generateId();
     const note: Note = {
       id: generateId(),
       title,
-      content: `# ${title}\n\n## Tasks\n- [ ] \n\n## Notes\n\n## Reflection\n\n`,
+      content: `# ${title}\n\n<< [[${yesterdayTitle}]] | [[${tomorrowTitle}]] >>\n\n## 🎯 Focus for Today\n- [ ] \n\n## 📝 Notes\n\n\n## ✅ Completed\n\n\n## 💭 Reflection\n\n`,
       folderId,
       pinned: false,
       createdAt: Date.now(),

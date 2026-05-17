@@ -394,11 +394,13 @@ def build_memory(notes, active_note_id, query, max_notes=10):
     # Build graph
     graph = {}
     note_map = {}
+    title_to_id = {}
     for n in notes:
         nid = n.get("id", "")
         title = n.get("title", "")
         content = n.get("content", "")
         note_map[nid] = {"title": title, "content": content}
+        title_to_id[title.lower()] = nid
         graph[nid] = set()
 
     # Extract [[wiki links]]
@@ -408,10 +410,10 @@ def build_memory(notes, active_note_id, query, max_notes=10):
         content = n.get("content", "")
         for m in re.finditer(r'\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]', content):
             link_name = m.group(1).strip().lower()
-            for other_id, other_data in note_map.items():
-                if other_data["title"].lower() == link_name and other_id != nid:
-                    graph[nid].add(other_id)
-                    graph[other_id].add(nid)
+            other_id = title_to_id.get(link_name)
+            if other_id and other_id != nid:
+                graph[nid].add(other_id)
+                graph[other_id].add(nid)
 
     # Score notes by relevance
     scores = {}
@@ -513,16 +515,17 @@ def builtin_response(query, notes, active_note_id):
 
     q = query.lower().strip()
     note_map = {n["id"]: n for n in notes}
+    title_to_id = {n["title"].lower(): n["id"] for n in notes}
     graph = {}
     for n in notes:
         graph[n["id"]] = set()
     for n in notes:
         for m in regex.finditer(r'\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]', n.get("content", "")):
             link_name = m.group(1).strip().lower()
-            for other in notes:
-                if other["title"].lower() == link_name and other["id"] != n["id"]:
-                    graph[n["id"]].add(other["id"])
-                    graph[other["id"]].add(n["id"])
+            other_id = title_to_id.get(link_name)
+            if other_id and other_id != n["id"]:
+                graph[n["id"]].add(other_id)
+                graph[other_id].add(n["id"])
 
     active_note = note_map.get(active_note_id)
 

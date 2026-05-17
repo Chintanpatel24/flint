@@ -56,14 +56,16 @@ export function GraphView() {
 
   const buildGraph = useCallback(() => {
     const links: Record<string, Set<string>> = {};
+    const noteTitleIdMap = new Map(state.notes.map(n => [n.title.toLowerCase(), n.id]));
+
     state.notes.forEach(n => { links[n.id] = new Set(); });
     state.notes.forEach(n => {
       const matches = n.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g);
       for (const m of matches) {
-        const target = state.notes.find(nt => nt.title.toLowerCase() === m[1].toLowerCase());
-        if (target && target.id !== n.id) {
-          links[n.id].add(target.id);
-          links[target.id].add(n.id);
+        const targetId = noteTitleIdMap.get(m[1].toLowerCase());
+        if (targetId && targetId !== n.id) {
+          links[n.id].add(targetId);
+          links[targetId].add(n.id);
         }
       }
     });
@@ -109,10 +111,10 @@ export function GraphView() {
     state.notes.forEach(n => {
       const matches = n.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g);
       for (const m of matches) {
-        const target = state.notes.find(nt => nt.title.toLowerCase() === m[1].toLowerCase());
-        if (target && target.id !== n.id) {
-          const key = [n.id, target.id].sort().join('-');
-          if (!edgeSet.has(key)) { edgeSet.add(key); edgesRef.current.push({ from: n.id, to: target.id }); }
+        const targetId = noteTitleIdMap.get(m[1].toLowerCase());
+        if (targetId && targetId !== n.id) {
+          const key = [n.id, targetId].sort().join('-');
+          if (!edgeSet.has(key)) { edgeSet.add(key); edgesRef.current.push({ from: n.id, to: targetId }); }
         }
       }
     });

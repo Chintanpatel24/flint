@@ -28,12 +28,14 @@ export function AIChat() {
   useEffect(() => {
     const connections = new Set<string>();
     let tags = 0;
+    const noteTitleMap = new Map(notes.map(n => [n.title.toLowerCase(), n.id]));
+
     notes.forEach(n => {
-      const matches = n.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\\]]+)?\]\]/g);
+      const matches = n.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g);
       for (const m of matches) {
-        const target = notes.find(nt => nt.title.toLowerCase() === m[1].toLowerCase());
-        if (target && target.id !== n.id) {
-          connections.add([n.id, target.id].sort().join('-'));
+        const targetId = noteTitleMap.get(m[1].toLowerCase());
+        if (targetId && targetId !== n.id) {
+          connections.add([n.id, targetId].sort().join('-'));
         }
       }
       const tagMatches = n.content.matchAll(/#(\w[\w-]*)/g);

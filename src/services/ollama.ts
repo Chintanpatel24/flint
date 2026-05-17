@@ -109,12 +109,14 @@ export function buildMemoryContext(
   }
 
   const connections: string[] = [];
+  const noteTitleMap = new Map(notes.map(n => [n.title.toLowerCase(), n.title]));
+
   notes.forEach(n => {
     const matches = n.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g);
     for (const m of matches) {
-      const target = notes.find(nt => nt.title.toLowerCase() === m[1].toLowerCase());
-      if (target && target.id !== n.id) {
-        connections.push(`"${n.title}" → "${target.title}"`);
+      const targetTitle = noteTitleMap.get(m[1].toLowerCase());
+      if (targetTitle && targetTitle !== n.title) {
+        connections.push(`"${n.title}" → "${targetTitle}"`);
       }
     }
   });
@@ -498,14 +500,16 @@ function getBuiltinResponse(
 
   // Build graph
   const graph = new Map<string, Set<string>>();
+  const noteTitleIdMap = new Map(notes.map(n => [n.title.toLowerCase(), n.id]));
+
   notes.forEach(n => graph.set(n.id, new Set()));
   notes.forEach(n => {
     const matches = n.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g);
     for (const m of matches) {
-      const target = notes.find(nt => nt.title.toLowerCase() === m[1].toLowerCase());
-      if (target && target.id !== n.id) {
-        graph.get(n.id)!.add(target.id);
-        graph.get(target.id)!.add(n.id);
+      const targetId = noteTitleIdMap.get(m[1].toLowerCase());
+      if (targetId && targetId !== n.id) {
+        graph.get(n.id)!.add(targetId);
+        graph.get(targetId)!.add(n.id);
       }
     }
   });
