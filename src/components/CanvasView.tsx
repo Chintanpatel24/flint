@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useStore } from '../store';
 import { FlintLogo } from './FlintLogo';
@@ -57,7 +56,7 @@ const CARD_COLORS = [
 // ─── Connection colors ────────────────────────────────────────────────────────
 
 const CONN_COLORS = [
-  '#555555', '#7f6df2', '#43a047', '#e5555a', '#00acc1', '#e68a00',
+  '#7f6df2', '#e5555a', '#43a047', '#00acc1', '#e68a00', '#c9b400', '#e040a0', '#dcddde', '#555555',
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -119,6 +118,28 @@ function smartBezier(
   return `M ${p1.x} ${p1.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${p2.x} ${p2.y}`;
 }
 
+function findNearestAnchor(
+  mx: number, my: number,
+  cards: CanvasCard[], excludeId: string,
+  snapRadius: number
+): { cardId: string; side: Side; pt: { x: number; y: number } } | null {
+  const sides: Side[] = ['top', 'right', 'bottom', 'left'];
+  let best: { cardId: string; side: Side; pt: { x: number; y: number } } | null = null;
+  let bestDist = snapRadius;
+  for (const card of cards) {
+    if (card.id === excludeId) continue;
+    for (const side of sides) {
+      const pt = getSidePt(card, side);
+      const d = Math.hypot(mx - pt.x, my - pt.y);
+      if (d < bestDist) {
+        bestDist = d;
+        best = { cardId: card.id, side, pt };
+      }
+    }
+  }
+  return best;
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function CanvasView() {
@@ -148,7 +169,8 @@ export function CanvasView() {
   } | null>(null);
 
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const [hoveredEdge, setHoveredEdge] = useState<{ id: string; side: Side } | null>(null);
+  const [snapTarget, setSnapTarget] = useState<{ cardId: string; side: Side } | null>(null);
+  const [selectedConnColor, setSelectedConnColor] = useState<string>(CONN_COLORS[0]);
   const [hoveredConn, setHoveredConn] = useState<string | null>(null);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [colorPickerOpen, setColorPickerOpen] = useState<string | null>(null);
@@ -259,6 +281,7 @@ export function CanvasView() {
         if (connDragRef.current) {
           connDragRef.current = null;
           setConnDrag(null);
+          setSnapTarget(null);
         }
         setSelectedCard(null);
         setColorPickerOpen(null);
@@ -274,6 +297,7 @@ export function CanvasView() {
         e.preventDefault();
         connDragRef.current = null;
         setConnDrag(null);
+        setSnapTarget(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -310,21 +334,16 @@ export function CanvasView() {
       const rect = containerRef.current!.getBoundingClientRect();
       const mx = (e.clientX - rect.left - pan.x) / zoom;
       const my = (e.clientY - rect.top - pan.y) / zoom;
-      
-      // Snap to target card border if hovering over one
-      const target = filteredCards.find(c =>
-        c.id !== connDragRef.current!.fromCard &&
-        mx >= c.x && mx <= c.x + c.w &&
-        my >= c.y && my <= c.y + c.h
-      );
 
-      if (target) {
-        const fromCard = filteredCards.find(c => c.id === connDragRef.current!.fromCard)!;
-        const { toSide } = getBestSides(fromCard, target);
-        const pt = getSidePt(target, toSide);
-        connDragRef.current = { ...connDragRef.current, mx: pt.x, my: pt.y, toSide };
+      // Magnetic snap: find nearest anchor dot on any other card
+      const anchor = findNearestAnchor(mx, my, filteredCards, connDragRef.current.fromCard, 30 / zoom);
+
+      if (anchor) {
+        connDragRef.current = { ...connDragRef.current, mx: anchor.pt.x, my: anchor.pt.y, toSide: anchor.side };
+        setSnapTarget({ cardId: anchor.cardId, side: anchor.side });
       } else {
         connDragRef.current = { ...connDragRef.current, mx, my, toSide: null };
+        setSnapTarget(null);
       }
       setConnDrag({ ...connDragRef.current });
     }
@@ -336,23 +355,20 @@ export function CanvasView() {
       const mx = (e.clientX - rect.left - pan.x) / zoom;
       const my = (e.clientY - rect.top - pan.y) / zoom;
 
-      const target = filteredCards.find(c =>
-        c.id !== connDragRef.current!.fromCard &&
-        mx >= c.x && mx <= c.x + c.w &&
-        my >= c.y && my <= c.y + c.h
-      );
+      const anchor = findNearestAnchor(mx, my, filteredCards, connDragRef.current.fromCard, 30 / zoom);
 
-      if (target && connDragRef.current.toSide) {
+      if (anchor) {
         const newConn: CanvasConnection = {
           id: `conn-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
           fromCard: connDragRef.current.fromCard,
-          toCard: target.id,
+          toCard: anchor.cardId,
           fromSide: connDragRef.current.fromSide,
-          toSide: connDragRef.current.toSide,
-          color: CONN_COLORS[connections.length % CONN_COLORS.length],
+          toSide: anchor.side,
+          color: selectedConnColor,
         };
         setConnections(prev => [...prev, newConn]);
       }
+      setSnapTarget(null);
     }
 
     dragRef.current = null;
@@ -452,7 +468,6 @@ export function CanvasView() {
             strokeWidth={14 / zoom}
             fill="none"
             style={{ cursor: 'pointer', pointerEvents: 'stroke' }}
-            onClick={() => deleteConnection(conn.id)}
             onMouseEnter={() => setHoveredConn(conn.id)}
             onMouseLeave={() => setHoveredConn(null)}
           />
@@ -462,25 +477,40 @@ export function CanvasView() {
             strokeWidth={hoveredConn === conn.id ? 2.5 / zoom : 1.8 / zoom}
             fill="none"
             strokeOpacity={0.8}
+            markerEnd={`url(#arrow-${color.replace('#', '')})`}
             style={{ pointerEvents: 'none' }}
           />
           {hoveredConn === conn.id && (
-            <g
-              transform={`translate(${midX}, ${midY})`}
-              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
-              onClick={() => deleteConnection(conn.id)}
-            >
-              <circle r={8 / zoom} fill="#1c1c1c" stroke={color} strokeWidth={1.2 / zoom} />
-              <text
-                x={0} y={1}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize={9 / zoom}
-                fill={color}
-                style={{ userSelect: 'none', pointerEvents: 'none' }}
+            <g transform={`translate(${midX}, ${midY})`} style={{ pointerEvents: 'auto' }}>
+              <g
+                transform={`translate(${-11 / zoom}, 0)`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => deleteConnection(conn.id)}
               >
-                ×
-              </text>
+                <circle r={8 / zoom} fill="#1c1c1c" stroke={color} strokeWidth={1.2 / zoom} />
+                <text
+                  x={0} y={1}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={9 / zoom}
+                  fill={color}
+                  style={{ userSelect: 'none', pointerEvents: 'none' }}
+                >
+                  ×
+                </text>
+              </g>
+              <g
+                transform={`translate(${11 / zoom}, 0)`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  const idx = CONN_COLORS.indexOf(conn.color || CONN_COLORS[0]);
+                  const nextColor = CONN_COLORS[(idx + 1) % CONN_COLORS.length];
+                  setConnections(prev => prev.map(c => c.id === conn.id ? { ...c, color: nextColor } : c));
+                }}
+              >
+                <circle r={8 / zoom} fill="#1c1c1c" stroke={color} strokeWidth={1.2 / zoom} />
+                <circle r={4 / zoom} fill={color} />
+              </g>
             </g>
           )}
         </g>
@@ -547,18 +577,38 @@ export function CanvasView() {
 
           const edges: Side[] = ['top', 'right', 'bottom', 'left'];
           
-          const getEdgeStyle = (side: Side): React.CSSProperties => {
-            const isHovered = hoveredEdge?.id === card.id && hoveredEdge.side === side;
+          const getAnchorDotStyle = (side: Side): React.CSSProperties => {
+            const dotSize = 10 / zoom;
+            const isSnapped = snapTarget?.cardId === card.id && snapTarget?.side === side;
+            const isSource = connDrag?.fromCard === card.id && connDrag?.fromSide === side;
+            const isVisible = hoveredCard === card.id || connDrag !== null;
+            const isActive = isSnapped || isSource;
+            const finalSize = isActive ? dotSize * 1.4 : dotSize;
+            const dotBorderColor = isActive ? '#fff' : 'rgba(127,109,242,0.7)';
+            const dotBg = isActive ? accentColor : 'rgba(127,109,242,0.5)';
+
             const base: React.CSSProperties = {
               position: 'absolute',
-              background: isHovered ? accentColor : 'transparent',
-              transition: 'background 0.15s ease',
+              width: finalSize,
+              height: finalSize,
+              borderRadius: '50%',
+              background: dotBg,
+              border: `${1.5 / zoom}px solid ${dotBorderColor}`,
+              cursor: 'crosshair',
               zIndex: 10,
+              opacity: isVisible || isActive ? 1 : 0,
+              transition: 'all 0.2s ease',
+              transform: 'translate(-50%, -50%)',
+              boxShadow: isActive
+                ? `0 0 ${8/zoom}px ${accentColor}, 0 0 ${16/zoom}px rgba(127,109,242,0.3)`
+                : `0 0 ${3/zoom}px rgba(0,0,0,0.4)`,
+              pointerEvents: isVisible || isActive ? 'auto' : 'none',
             };
-            if (side === 'top') return { ...base, top: -4/zoom, left: '10%', width: '80%', height: 8/zoom, cursor: 'crosshair' };
-            if (side === 'bottom') return { ...base, bottom: -4/zoom, left: '10%', width: '80%', height: 8/zoom, cursor: 'crosshair' };
-            if (side === 'left') return { ...base, left: -4/zoom, top: '10%', height: '80%', width: 8/zoom, cursor: 'crosshair' };
-            return { ...base, right: -4/zoom, top: '10%', height: '80%', width: 8/zoom, cursor: 'crosshair' };
+
+            if (side === 'top') return { ...base, top: 0, left: '50%' };
+            if (side === 'bottom') return { ...base, top: '100%', left: '50%' };
+            if (side === 'left') return { ...base, top: '50%', left: 0 };
+            return { ...base, top: '50%', left: '100%' };
           };
 
           return (
@@ -592,14 +642,12 @@ export function CanvasView() {
                 if (isNote && card.noteId) dispatch({ type: 'OPEN_TAB', payload: card.noteId });
               }}
               onMouseEnter={() => setHoveredCard(card.id)}
-              onMouseLeave={() => { setHoveredCard(null); setHoveredEdge(null); }}
+              onMouseLeave={() => { setHoveredCard(null); }}
             >
               {edges.map(side => (
                 <div
                   key={side}
-                  style={getEdgeStyle(side)}
-                  onMouseEnter={() => setHoveredEdge({ id: card.id, side })}
-                  onMouseLeave={() => setHoveredEdge(null)}
+                  style={getAnchorDotStyle(side)}
                   onMouseDown={e => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -764,6 +812,33 @@ export function CanvasView() {
           pointerEvents: 'none', overflow: 'visible', zIndex: 2,
         }}
       >
+        <defs>
+          {CONN_COLORS.map(color => (
+            <marker
+              key={`arrow-${color}`}
+              id={`arrow-${color.replace('#', '')}`}
+              viewBox="0 0 10 10"
+              refX="0"
+              refY="5"
+              markerWidth={8 / zoom}
+              markerHeight={8 / zoom}
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1 L 10 5 L 0 9 Z" fill={color} fillOpacity={0.85} />
+            </marker>
+          ))}
+          <marker
+            id="arrow-drag-preview"
+            viewBox="0 0 10 10"
+            refX="0"
+            refY="5"
+            markerWidth={8 / zoom}
+            markerHeight={8 / zoom}
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 1 L 10 5 L 0 9 Z" fill={accentColor} fillOpacity={0.7} />
+          </marker>
+        </defs>
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
           {renderConnections()}
 
@@ -780,6 +855,7 @@ export function CanvasView() {
                 strokeDasharray={`${5 / zoom} ${3 / zoom}`}
                 fill="none"
                 strokeOpacity={0.7}
+                markerEnd="url(#arrow-drag-preview)"
                 style={{ pointerEvents: 'none' }}
               />
             );
@@ -819,6 +895,33 @@ export function CanvasView() {
           >
             <Type size={11} /> Add card
           </button>
+
+          {/* Connection line color picker */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '4px 8px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid #3a3a3a',
+            borderRadius: 6,
+          }}>
+            <span style={{ fontSize: 10, color: textMuted, marginRight: 2, whiteSpace: 'nowrap' }}>Line:</span>
+            {CONN_COLORS.map(color => (
+              <div
+                key={color}
+                onClick={() => setSelectedConnColor(color)}
+                title={`Connection color: ${color}`}
+                style={{
+                  width: 14, height: 14, borderRadius: '50%',
+                  background: color,
+                  cursor: 'pointer',
+                  border: selectedConnColor === color ? `2px solid ${textPrimary}` : '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: selectedConnColor === color ? `0 0 6px ${color}` : 'none',
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -877,7 +980,7 @@ export function CanvasView() {
         <span>Scroll to pan</span> <span>·</span>
         <span>Ctrl+Scroll to zoom</span> <span>·</span>
         <span>Drag header to move</span> <span>·</span>
-        <span>Hover border to connect</span> <span>·</span>
+        <span>Drag dot to connect</span> <span>·</span>
         <span>ESC/Right-Click to cancel</span>
       </div>
     </div>

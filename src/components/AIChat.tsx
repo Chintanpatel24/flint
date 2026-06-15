@@ -339,9 +339,13 @@ export function AIChat() {
           </div>
           <ConfigField label="Provider">
             <select value={aiSettings.provider}
-              onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { provider: e.target.value as 'ollama' } })}
+              onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { provider: e.target.value as 'ollama' | 'openai' | 'gemini' | 'openai-compatible' | 'local-gguf' } })}
               style={{ ...inputStyle, fontSize: 11 }}>
               <option value="ollama">Ollama (local)</option>
+              <option value="local-gguf">Self-hosted GGUF</option>
+              <option value="openai">OpenAI</option>
+              <option value="gemini">Gemini</option>
+              <option value="openai-compatible">OpenAI-compatible</option>
             </select>
           </ConfigField>
           {aiSettings.provider === 'ollama' && (
@@ -392,12 +396,19 @@ export function AIChat() {
             </ConfigField>
           )}
           <ConfigField label="Model">
-            <select value={aiSettings.model}
-              onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { model: e.target.value } })}
-              style={{ ...inputStyle, fontSize: 11 }}>
-              <option value="llama3.2:latest">llama3.2:latest</option>
-              {models.filter(m => m.includes('llama3.2') && m !== 'llama3.2:latest').map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
+            {aiSettings.provider === 'ollama' && models.length > 0 ? (
+              <select value={aiSettings.model}
+                onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { model: e.target.value } })}
+                style={{ ...inputStyle, fontSize: 11 }}>
+                {!aiSettings.model && <option value="">Select model...</option>}
+                {models.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            ) : (
+              <input type="text" value={aiSettings.model}
+                onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { model: e.target.value } })}
+                placeholder={aiSettings.provider === 'openai' ? 'e.g. gpt-4o-mini' : aiSettings.provider === 'gemini' ? 'e.g. gemini-1.5-flash' : aiSettings.provider === 'openai-compatible' ? 'Provider model id' : aiSettings.provider === 'local-gguf' ? 'Optional alias for this GGUF' : 'e.g. llama3.2, mistral, codellama'}
+                style={{ ...inputStyle, fontSize: 11 }} />
+            )}
           </ConfigField>
           <ConfigField label="Context">
             <input type="range" min={2} max={20} value={aiSettings.maxContextNotes}

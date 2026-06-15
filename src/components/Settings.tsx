@@ -412,11 +412,15 @@ export function SettingsPanel() {
                   onChange={e => dispatch({
                     type: 'UPDATE_AI_SETTINGS',
                     payload: {
-                      provider: e.target.value as 'ollama',
+                      provider: e.target.value as 'ollama' | 'openai' | 'gemini' | 'openai-compatible' | 'local-gguf',
                     },
                   })}
                   style={{ flex: 1, background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '5px 8px', color: '#aaa', fontSize: 12, outline: 'none' }}>
                   <option value="ollama">Ollama (local)</option>
+                  <option value="local-gguf">Self-hosted GGUF (local file)</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="gemini">Google Gemini</option>
+                  <option value="openai-compatible">Other OpenAI-compatible API</option>
                 </select>
               </SettingRow>
 
@@ -467,18 +471,42 @@ export function SettingsPanel() {
                 </>
               )}
 
+              {/* Model — works with ANY model */}
               <SettingRow icon={<Brain size={14} />} label="Model">
-                <div className="flex items-center gap-2" style={{ flex: 1 }}>
-                  <select value={state.aiSettings.model}
-                    onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { model: e.target.value } })}
-                    style={{ flex: 1, background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '5px 8px', color: '#aaa', fontSize: 12, outline: 'none' }}>
-                    <option value="llama3.2:latest">llama3.2:latest</option>
-                    {models.filter(m => m.includes('llama3.2') && m !== 'llama3.2:latest').map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </div>
+                {state.aiSettings.provider === 'ollama' && models.length > 0 ? (
+                  <div className="flex items-center gap-2" style={{ flex: 1 }}>
+                    <select value={state.aiSettings.model}
+                      onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { model: e.target.value } })}
+                      style={{ flex: 1, background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '5px 8px', color: '#aaa', fontSize: 12, outline: 'none' }}>
+                      <option value="">Select model...</option>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2" style={{ flex: 1 }}>
+                    <input type="text" value={state.aiSettings.model}
+                      onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { model: e.target.value } })}
+                      placeholder={state.aiSettings.provider === 'openai' ? 'e.g. gpt-4o-mini' : state.aiSettings.provider === 'gemini' ? 'e.g. gemini-1.5-flash' : state.aiSettings.provider === 'openai-compatible' ? 'Provider model id' : state.aiSettings.provider === 'local-gguf' ? 'Optional alias for the GGUF model' : 'e.g. llama3.2, mistral, codellama, phi3'}
+                      style={{ flex: 1, background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '5px 8px', color: '#aaa', fontSize: 12, outline: 'none' }} />
+                  </div>
+                )}
               </SettingRow>
 
-
+              {/* Custom model input for when models are detected */}
+              {state.aiSettings.provider === 'ollama' && models.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <span style={{ fontSize: 10, color: '#444', width: 140, flexShrink: 0 }}>Use custom model</span>
+                  <input type="text" value={customModel}
+                    onChange={e => setCustomModel(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') applyCustomModel(); }}
+                    placeholder="Type any model name..."
+                    style={{ flex: 1, background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '5px 8px', color: '#aaa', fontSize: 11, outline: 'none' }} />
+                  <button onClick={applyCustomModel}
+                    style={{ padding: '4px 8px', background: '#141414', border: '1px solid #1a1a1a', borderRadius: 4, color: '#666', fontSize: 10, cursor: 'pointer' }}>
+                    Set
+                  </button>
+                </div>
+              )}
 
               {/* Internet Access */}
               <div style={{ padding: 14, background: '#0d0d0d', borderRadius: 8, border: `1px solid ${state.aiSettings.internetAccess ? '#1a2a1a' : '#1a1a1a'}` }}>
@@ -519,7 +547,14 @@ export function SettingsPanel() {
                   style={{ flex: 1, accentColor: '#666' }} />
               </SettingRow>
 
-
+              {/* System prompt */}
+              <div>
+                <div style={{ fontSize: 11, color: '#555', marginBottom: 6 }}>System prompt</div>
+                <textarea value={state.aiSettings.systemPrompt}
+                  onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { systemPrompt: e.target.value } })}
+                  rows={4}
+                  style={{ width: '100%', background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '8px 10px', color: '#888', fontSize: 11, outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5 }} />
+              </div>
 
               {/* How it works */}
               <div style={{ padding: 12, background: '#060606', borderRadius: 6, border: '1px solid #151515' }}>
