@@ -101,24 +101,24 @@ export function AIChat() {
 
   const applyAIActions = (actions: AIAction[]) => {
     const summaries: string[] = [];
+    const editableIds = new Set(openTabs);
     actions.forEach(action => {
       const noteId = resolveTargetNoteId(action);
       const targetLabel = noteId ? notes.find(note => note.id === noteId)?.title || 'note' : 'note';
-      if (action.type !== 'create_note' && !noteId) {
-        summaries.push(`Skipped ${action.type.replace('_', ' ')} because Flint could not resolve the target note`);
+      const requiresOpenTarget = action.type !== 'create_note';
+      if (requiresOpenTarget && (!noteId || !editableIds.has(noteId))) {
+        summaries.push(`Blocked ${action.type.replace('_', ' ')} for "${targetLabel}" because only open notes are editable`);
         return;
       }
       if (action.type === 'rename_note') {
         if (!noteId || !action.title) return;
         dispatch({ type: 'RENAME_NOTE', payload: { id: noteId, title: action.title } });
-        dispatch({ type: 'OPEN_TAB', payload: noteId });
         summaries.push(`Renamed note to "${action.title}"`);
       }
       if (action.type === 'update_note') {
-        if (!noteId || typeof action.content !== 'string') return;
+        if (!noteId || !action.content) return;
         dispatch({ type: 'UPDATE_NOTE', payload: { id: noteId, content: action.content } });
-        dispatch({ type: 'OPEN_TAB', payload: noteId });
-        summaries.push(`Updated "${targetLabel}"`);
+        summaries.push('Updated note content');
       }
       if (action.type === 'create_note' && action.title) {
         const newNote = {
@@ -136,7 +136,7 @@ export function AIChat() {
       if (action.type === 'delete_note') {
         if (!noteId) return;
         dispatch({ type: 'DELETE_NOTE', payload: noteId });
-        summaries.push(`Deleted "${targetLabel}"`);
+        summaries.push('Deleted a note');
       }
     });
     return summaries;

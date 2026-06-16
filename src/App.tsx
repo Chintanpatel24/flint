@@ -6,7 +6,6 @@ import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
 import { GraphView } from './components/GraphView';
 import { CanvasView } from './components/CanvasView';
-import { DailyNoteView } from './components/DailyNoteView';
 import { SearchModal } from './components/SearchModal';
 import { StatusBar } from './components/StatusBar';
 import { BacklinksPanel } from './components/BacklinksPanel';
@@ -29,7 +28,7 @@ function CommandPalette() {
 
   const commands = [
     { icon: <Plus size={14} />, label: 'New note', action: () => { createNote(); dispatch({ type: 'TOGGLE_COMMAND_PALETTE' }); } },
-    { icon: <CalendarDays size={14} />, label: 'Open daily workspace', action: () => { openDailyNote(); dispatch({ type: 'TOGGLE_COMMAND_PALETTE' }); } },
+    { icon: <CalendarDays size={14} />, label: 'Open daily note', action: () => { openDailyNote(); dispatch({ type: 'TOGGLE_COMMAND_PALETTE' }); } },
     { icon: <FolderPlus size={14} />, label: 'New folder', action: () => { createFolder('New Folder'); dispatch({ type: 'TOGGLE_COMMAND_PALETTE' }); } },
     { icon: <Waypoints size={14} />, label: 'Open graph view', action: () => { dispatch({ type: 'TOGGLE_GRAPH_VIEW' }); dispatch({ type: 'TOGGLE_COMMAND_PALETTE' }); } },
     { icon: <LayoutGrid size={14} />, label: 'Open canvas', action: () => { dispatch({ type: 'TOGGLE_CANVAS_VIEW' }); dispatch({ type: 'TOGGLE_COMMAND_PALETTE' }); } },
@@ -85,7 +84,7 @@ function CommandPalette() {
 
 function AppContent() {
   const { state, dispatch, createNote, openDailyNote } = useStore();
-  const { activeNoteId, viewMode, showGraphView, showCanvasView, showDailyNote, showSearch, showCommandPalette, sidebarOpen, rightPanelOpen, activeVaultId, settingsOpen, showAIChat } = state;
+  const { activeNoteId, viewMode, showGraphView, showCanvasView, showSearch, showCommandPalette, sidebarOpen, rightPanelOpen, activeVaultId, settingsOpen, showAIChat } = state;
 
   // Dynamic style tag for settings
   useEffect(() => {
@@ -143,7 +142,7 @@ function AppContent() {
           <RibbonBtn icon={<PanelLeftOpen size={16} />} active={sidebarOpen} onClick={() => dispatch({ type: 'TOGGLE_SIDEBAR' })} title="Toggle sidebar (Ctrl+\)" />
           <RibbonBtn icon={<Search size={16} />} onClick={() => dispatch({ type: 'TOGGLE_SEARCH' })} title="Search (Ctrl+Shift+F)" />
           <RibbonBtn icon={<Plus size={16} />} onClick={() => createNote()} title="New note (Ctrl+N)" />
-          <RibbonBtn icon={<CalendarDays size={16} />} active={showDailyNote} onClick={() => openDailyNote()} title="Daily workspace (Ctrl+Shift+D)" />
+          <RibbonBtn icon={<CalendarDays size={16} />} onClick={() => openDailyNote()} title="Daily note (Ctrl+Shift+D)" />
           <RibbonBtn icon={<Waypoints size={16} />} active={showGraphView} onClick={() => dispatch({ type: 'TOGGLE_GRAPH_VIEW' })} title="Graph view (Ctrl+G)" />
           <RibbonBtn icon={<LayoutGrid size={16} />} active={showCanvasView} onClick={() => dispatch({ type: 'TOGGLE_CANVAS_VIEW' })} title="Canvas (Ctrl+Shift+C)" />
           <RibbonBtn icon={<Command size={16} />} onClick={() => dispatch({ type: 'TOGGLE_COMMAND_PALETTE' })} title="Command palette (Ctrl+P)" />
@@ -270,7 +269,6 @@ function AppContent() {
       <StatusBar />
       {showGraphView && <GraphView />}
       {showCanvasView && <CanvasView />}
-      {showDailyNote && <DailyNoteView />}
       {showSearch && <SearchModal />}
       {showCommandPalette && <CommandPalette />}
       {settingsOpen && <SettingsPanel />}

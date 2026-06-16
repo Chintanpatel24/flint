@@ -66,8 +66,8 @@ export function Sidebar() {
         </button>
         <button 
           onClick={() => openDailyNote()} 
-          title="Daily workspace"
-          aria-label="Open daily workspace"
+          title="Daily note"
+          aria-label="Open or create today's daily note"
           style={{ padding: '4px 9px', background: 'var(--bg-elevated)', border: '1px solid var(--border-light)', color: 'var(--text-secondary)', fontSize: 11, borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.color = 'var(--text)'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-light)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}>
