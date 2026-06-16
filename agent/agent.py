@@ -37,7 +37,7 @@ LOCAL_MODEL_LOCK = threading.Lock()
 def status():
     """Check if Ollama is running"""
     try:
-        r = requests.get(f"{OLLAMA_URL}/api/tags", timeout=1)
+        r = requests.get(f"{OLLAMA_URL}/api/tags", timeout=3)
         if r.ok:
             data = r.json()
             models = [m["name"] for m in data.get("models", [])]
@@ -51,7 +51,7 @@ def status():
 def get_models():
     """List available Ollama models"""
     try:
-        r = requests.get(f"{OLLAMA_URL}/api/tags", timeout=1)
+        r = requests.get(f"{OLLAMA_URL}/api/tags", timeout=3)
         if r.ok:
             data = r.json()
             return jsonify({"models": [m["name"] for m in data.get("models", [])]})

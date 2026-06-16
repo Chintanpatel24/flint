@@ -44,21 +44,18 @@
       "target": [
         "nsis"
       ],
-      "icon": "public/flint-logo.png"
+      "icon": "public/icon.png"
     },
     "linux": {
       "target": [
         "AppImage",
         "deb"
       ],
-      "icon": "public/flint-logo.png"
+      "icon": "public/icon.png"
     },
     "directories": {
       "output": "dist_electron"
     },
-    "asarUnpack": [
-      "electron/bin/**/*"
-    ],
     "files": [
       "dist/**/*",
       "electron/**/*"

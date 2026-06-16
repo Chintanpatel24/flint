@@ -78,7 +78,7 @@ export async function checkAgentStatus(): Promise<boolean> {
   try {
     const res = await Promise.race([
       fetch(`${AGENT_URL}/status`),
-      timeout(5000),
+      timeout(2000),
     ]);
     return (res as Response).ok;
   } catch {
