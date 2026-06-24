@@ -34,8 +34,12 @@ function startAgent() {
     });
   } else if (fs.existsSync(agentScript)) {
     console.log('[Flint] Starting Python AI agent...');
+    // Prefer the venv created by the installer (one level up from the app dir)
+    const venvPython = path.join(APP_DIR, '..', 'venv', 'bin', 'python3');
     const pythonCandidates = process.platform === 'win32' ? ['python', 'py'] : ['python3', 'python'];
-    const pythonCmd = pythonCandidates.find(commandExists);
+    const pythonCmd = (process.platform !== 'win32' && fs.existsSync(venvPython))
+      ? venvPython
+      : pythonCandidates.find(commandExists);
     if (!pythonCmd) {
       console.log('[Flint] Python was not found. Note features remain available.');
       return;

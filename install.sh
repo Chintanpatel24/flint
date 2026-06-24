@@ -159,7 +159,9 @@ install_agent() {
   fi
 
   if [ -n "${PYTHON_CMD:-}" ] && [ -f "$FLINT_HOME/agent/requirements.txt" ]; then
-    "$PYTHON_CMD" -m pip install --user -q -r "$FLINT_HOME/agent/requirements.txt" || warn "Python packages were not installed. The app still opens; install agent requirements manually for AI."
+    "$PYTHON_CMD" -m venv "$FLINT_HOME/venv" \
+      && "$FLINT_HOME/venv/bin/pip" install -q -r "$FLINT_HOME/agent/requirements.txt" \
+      || warn "Python packages were not installed. The app still opens; install agent requirements manually for AI."
   fi
 }
 
@@ -205,6 +207,10 @@ LAUNCHER
   cat > "$FLINT_BIN/flint-agent" <<AGENT
 #!/usr/bin/env bash
 set -e
+VENV_PYTHON="$FLINT_HOME/venv/bin/python3"
+if [ -x "\$VENV_PYTHON" ]; then
+  exec "\$VENV_PYTHON" "$FLINT_HOME/agent/agent.py" "\$@"
+fi
 PYTHON_CMD=""
 command -v python3 >/dev/null 2>&1 && PYTHON_CMD="python3"
 [ -z "\$PYTHON_CMD" ] && command -v python >/dev/null 2>&1 && PYTHON_CMD="python"
