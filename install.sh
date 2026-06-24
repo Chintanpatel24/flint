@@ -159,9 +159,14 @@ install_agent() {
   fi
 
   if [ -n "${PYTHON_CMD:-}" ] && [ -f "$FLINT_HOME/agent/requirements.txt" ]; then
-    "$PYTHON_CMD" -m venv "$FLINT_HOME/venv" \
-      && "$FLINT_HOME/venv/bin/pip" install -q -r "$FLINT_HOME/agent/requirements.txt" \
-      || warn "Python packages were not installed. The app still opens; install agent requirements manually for AI."
+    "$PYTHON_CMD" -m venv "$FLINT_HOME/venv" || { warn "Could not create Python venv. AI agent will not be available."; return; }
+    printf "      Installing base Python packages...\n"
+    "$FLINT_HOME/venv/bin/pip" install -q flask flask-cors requests \
+      || { warn "Python packages were not installed. The app still opens; install agent requirements manually for AI."; return; }
+    printf "      Installing llama-cpp-python (using pre-built binary if available, may take a few minutes)...\n"
+    "$FLINT_HOME/venv/bin/pip" install --prefer-binary "llama-cpp-python>=0.2.90" \
+      || warn "llama-cpp-python was not installed. Basic note features remain available; local AI inference will not work."
+    ok "Python packages installed"
   fi
 }
 
