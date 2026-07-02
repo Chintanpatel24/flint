@@ -19,6 +19,7 @@
     "@tiptap/suggestion": "^3.27.1",
     "clsx": "2.1.1",
     "lucide-react": "^1.8.0",
+    "playwright": "^1.61.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
