@@ -7,12 +7,11 @@ $InstallerUrl = "https://raw.githubusercontent.com/$RepoOwner/$RepoName/$RepoBra
 $FlintHome = if ($env:FLINT_HOME) { $env:FLINT_HOME } else { Join-Path $env:USERPROFILE ".flint" }
 
 Write-Host ""
-Write-Host "███████╗██╗     ██╗███╗   ██╗████████╗ " -ForegroundColor Cyan
-Write-Host "██╔════╝██║     ██║████╗  ██║╚══██╔══╝ " -ForegroundColor Cyan
-Write-Host "█████╗  ██║     ██║██╔██╗ ██║   ██║    " -ForegroundColor Cyan
-Write-Host "██╔══╝  ██║     ██║██║╚██╗██║   ██║    " -ForegroundColor Cyan
-Write-Host "██║     ███████╗██║██║ ╚████║   ██║    " -ForegroundColor Cyan
-Write-Host "╚═╝     ╚══════╝╚═╝╚═╝  ╚═══╝   ╚═╝    " -ForegroundColor Cyan
+Write-Host "  ______   __       __   __   __   ______  " -ForegroundColor Cyan
+Write-Host " /\  ___\ /\ \     /\ \ /\ ""-""\-\ \ /\__  _\ " -ForegroundColor Cyan
+Write-Host " \ \  __\ \ \ \____\ \ \\ \ \-.  \ \/_/\ \/ " -ForegroundColor Cyan
+Write-Host "  \ \_\    \ \_____\ \_\ \ \_\""\_\   \ \_\ " -ForegroundColor Cyan
+Write-Host "   \/_/     \/_____/\/_/  \/_/ \/_/    \/_/ " -ForegroundColor Cyan
 Write-Host ""
 
 if (-not (Test-Path (Join-Path $FlintHome "app"))) {
@@ -41,4 +40,4 @@ Write-Host "[2/2] Update complete"
 Write-Host ""
 Write-Host "Flint has been updated successfully." -ForegroundColor Green
 Write-Host "Run it from your Start Menu or with:"
-Write-Host "  $FlintHome\bin\flint.cmd"
+Write-Host ("  " + (Join-Path $FlintHome "bin\flint.cmd"))
