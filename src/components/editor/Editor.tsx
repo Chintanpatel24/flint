@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react';
-import { useStore } from '../store';
-import { getHandle, writeMarkdownFile } from '../services/filesystem';
+import { useStore } from '../../store';
+import { getHandle, writeMarkdownFile } from '../../services/filesystem';
 
 export function Editor({ noteId }: { noteId: string }) {
   const { state, dispatch } = useStore();

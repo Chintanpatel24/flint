@@ -3,10 +3,9 @@ export interface Note {
   title: string;
   content: string;
   folderId: string | null;
+  pinned: boolean;
   createdAt: number;
   updatedAt: number;
-  pinned?: boolean;
-  filePath?: string; // for folder-based vaults
 }
 
 export interface Folder {
@@ -26,62 +25,8 @@ export interface Vault {
   folderPath?: string;
 }
 
-export interface CanvasCard {
-  id: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  type: 'note' | 'text';
-  noteId?: string;
-  content?: string;
-  color?: string;
-}
-
-export interface VaultWorkspace {
-  notes: Note[];
-  folders: Folder[];
-  openTabs: string[];
-  activeNoteId: string | null;
-  hasFolderHandle: boolean;
-  canvasCards?: CanvasCard[];
-}
-
-export type ViewMode = 'edit' | 'split' | 'preview';
-
-export interface FlintSettings {
-  fontSize: number;
-  spellCheck: boolean;
-  autoSave: boolean;
-  showLineNumbers: boolean;
-  tabSize: number;
-  wordWrap: boolean;
-  theme: 'dark' | 'light' | 'rose' | 'ocean' | 'forest' | 'amber';
-  editorStyle: 'split' | 'tiptap';
-}
-
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: number;
-  noteContext?: string[];
-  webResults?: string;
-}
-
-export interface AIAction {
-  type: 'update_note' | 'rename_note' | 'create_note' | 'delete_note';
-  target?: 'active' | 'id' | 'title';
-  noteId?: string;
-  matchTitle?: string;
-  title?: string;
-  content?: string;
-}
-
-export type AIProvider = 'ollama' | 'openai' | 'gemini' | 'openai-compatible' | 'local-gguf';
-
 export interface AISettings {
-  provider: AIProvider;
+  provider: 'ollama' | 'openai' | 'gemini' | 'openai-compatible' | 'local-gguf';
   ollamaUrl: string;
   apiKey: string;
   apiBaseUrl: string;
@@ -92,29 +37,81 @@ export interface AISettings {
   model: string;
   maxContextNotes: number;
   temperature: number;
-  systemPrompt: string;
   internetAccess: boolean;
+  systemPrompt: string;
+}
+
+export interface FlintSettings {
+  fontSize: number;
+  spellCheck: boolean;
+  autoSave: boolean;
+  showLineNumbers: boolean;
+  tabSize: number;
+  wordWrap: boolean;
+  theme: 'dark' | 'light' | 'sepia';
+  editorStyle: 'default' | 'tiptap';
+  dailyNoteTemplate?: string;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface VaultWorkspace {
+  notes: Note[];
+  folders: Folder[];
+  openTabs: string[];
+  activeNoteId: string | null;
+  hasFolderHandle: boolean;
+  canvasCards: CanvasCard[];
+}
+
+export interface CanvasCard {
+  id: string;
+  type: 'text' | 'note' | 'web';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  content?: string; // For text cards
+  noteId?: string; // For note cards
+  url?: string;   // For web cards
+  color?: string;
+}
+
+export interface CanvasConnection {
+  id: string;
+  fromId: string;
+  toId: string;
+  label?: string;
 }
 
 export interface AppState {
   vaults: Vault[];
   vaultData: Record<string, VaultWorkspace>;
   activeVaultId: string | null;
+
+  // Current vault state (mirrored for easy access)
   notes: Note[];
   folders: Folder[];
   openTabs: string[];
   activeNoteId: string | null;
-  viewMode: ViewMode;
+  secondaryNoteId: string | null;
+  hasFolderHandle: boolean;
+
+  viewMode: 'edit' | 'preview' | 'split';
   sidebarOpen: boolean;
   rightPanelOpen: boolean;
   showGraphView: boolean;
   showCanvasView: boolean;
   showSearch: boolean;
   showCommandPalette: boolean;
+  showQuickSwitcher: boolean;
   settingsOpen: boolean;
   showAIChat: boolean;
+
   aiMessages: ChatMessage[];
   aiSettings: AISettings;
-  hasFolderHandle: boolean; // whether current vault has a live folder handle
   appSettings: FlintSettings;
 }

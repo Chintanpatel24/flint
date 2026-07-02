@@ -1,4 +1,4 @@
-import { useStore } from '../store';
+import { useStore } from '../../store';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 export function BacklinksPanel({ noteId }: { noteId: string }) {

@@ -1,4 +1,4 @@
-import { useStore } from '../store';
+import { useStore } from '../../store';
 import { X } from 'lucide-react';
 
 export function TabBar() {

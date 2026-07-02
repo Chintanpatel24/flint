@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useRef, useCallback, type ReactNode } from 'react';
-import type { Note, Folder, Vault, AppState, ChatMessage, AISettings, VaultWorkspace, CanvasCard, FlintSettings } from './types';
+import type { Note, Folder, Vault, AppState, ChatMessage, AISettings, VaultWorkspace, CanvasCard, FlintSettings, CanvasConnection } from './types';
 
 const STORAGE_KEY = 'flint-data';
 const SUPPORTED_AI_PROVIDERS = ['ollama', 'openai', 'gemini', 'openai-compatible', 'local-gguf'] as const;
@@ -21,7 +21,7 @@ const DEFAULT_AI_SETTINGS: AISettings = {
 };
 
 const DEFAULT_SETTINGS: FlintSettings = {
-  fontSize: 14, spellCheck: false, autoSave: true, showLineNumbers: false, tabSize: 2, wordWrap: true, theme: 'dark', editorStyle: 'split'
+  fontSize: 14, spellCheck: false, autoSave: true, showLineNumbers: false, tabSize: 2, wordWrap: true, theme: 'dark', editorStyle: 'default'
 };
 
 function normalizeSettings(raw: unknown): FlintSettings {
@@ -51,7 +51,7 @@ function normalizeAISettings(raw: unknown): AISettings {
   return merged;
 }
 
-function buildWorkspace(notes: Note[], folders: Folder[], openTabs?: string[], activeNoteId?: string | null, hasFolderHandle = false, canvasCards: CanvasCard[] = []): VaultWorkspace {
+function buildWorkspace(notes: Note[], folders: Folder[], openTabs?: string[], activeNoteId?: string | null, hasFolderHandle = false, canvasCards: CanvasCard[] = [], canvasConnections: CanvasConnection[] = []): VaultWorkspace {
   const firstNoteId = notes[0]?.id || null;
   const normalizedTabs = (openTabs || []).filter(id => notes.some(note => note.id === id));
   const fallbackTabs = normalizedTabs.length ? normalizedTabs : firstNoteId ? [firstNoteId] : [];
@@ -66,6 +66,7 @@ function buildWorkspace(notes: Note[], folders: Folder[], openTabs?: string[], a
     activeNoteId: fallbackActive,
     hasFolderHandle,
     canvasCards,
+    canvasConnections,
   };
 }
 
@@ -103,6 +104,7 @@ function updateCurrentWorkspace(state: AppState, updater: (workspace: VaultWorks
     updated.activeNoteId,
     updated.hasFolderHandle,
     updated.canvasCards,
+    updated.canvasConnections,
   );
   const nextState = {
     ...state,
@@ -124,29 +126,22 @@ function loadState(): AppState | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<AppState>;
     if (parsed && parsed.vaults) {
-      const notes = parsed.notes || [];
-      const folders = parsed.folders || [];
-      const openTabs = parsed.openTabs || [];
       const activeVaultId = parsed.activeVaultId || parsed.vaults[0]?.id || null;
-      const legacyWorkspace = buildWorkspace(notes, folders, openTabs, parsed.activeNoteId || null, false);
       const savedVaultData = parsed.vaultData || {};
       const vaultData = Object.fromEntries(
         parsed.vaults.map(vault => {
           const workspace = savedVaultData[vault.id];
           return [vault.id, buildWorkspace(
-            workspace?.notes || (vault.id === activeVaultId ? notes : []),
-            workspace?.folders || (vault.id === activeVaultId ? folders : []),
-            workspace?.openTabs || (vault.id === activeVaultId ? openTabs : []),
-            workspace?.activeNoteId || (vault.id === activeVaultId ? parsed.activeNoteId || null : null),
-            false,
+            workspace?.notes || [],
+            workspace?.folders || [],
+            workspace?.openTabs || [],
+            workspace?.activeNoteId || null,
+            workspace?.hasFolderHandle || false,
             workspace?.canvasCards || [],
+            workspace?.canvasConnections || [],
           )];
         })
       ) as Record<string, VaultWorkspace>;
-
-      if (activeVaultId && !vaultData[activeVaultId]) {
-        vaultData[activeVaultId] = legacyWorkspace;
-      }
 
       const baseState: AppState = {
         vaults: parsed.vaults,
@@ -156,6 +151,7 @@ function loadState(): AppState | null {
         folders: [],
         openTabs: [],
         activeNoteId: null,
+        secondaryNoteId: parsed.secondaryNoteId || null,
         viewMode: parsed.viewMode || 'edit',
         sidebarOpen: parsed.sidebarOpen ?? true,
         rightPanelOpen: parsed.rightPanelOpen ?? false,
@@ -163,6 +159,7 @@ function loadState(): AppState | null {
         showCanvasView: false,
         showSearch: false,
         showCommandPalette: false,
+        showQuickSwitcher: false,
         settingsOpen: false,
         showAIChat: parsed.showAIChat ?? false,
         aiMessages: parsed.aiMessages || [],
@@ -325,74 +322,6 @@ Found interesting patterns in [[Project Ideas]].
 #daily #journal #template`,
     createdAt: Date.now() - 86400000 * 2, updatedAt: Date.now() - 14400000,
   },
-  {
-    id: 'n5', title: 'Reading List', folderId: 'f2', pinned: false,
-    content: `# Reading List
-
-Books and articles to read.
-
-## Currently Reading
-
-- **"Atomic Habits"** by James Clear
-  - Key takeaway: Small habits, remarkable results
-  - See [[Daily Notes]] for habit tracking
-
-## Up Next
-
-- "Thinking, Fast and Slow" by Daniel Kahneman
-- "The Pragmatic Programmer"
-- "Designing Data-Intensive Applications"
-
-## Completed
-
-- [x] "Deep Work" by Cal Newport
-- [x] "Getting Things Done" by David Allen
-
-## Articles
-
-- Understanding knowledge graphs
-- The Zettelkasten method → relates to [[Welcome to Flint]]
-- Spaced repetition systems
-
-#reading #books #learning`,
-    createdAt: Date.now() - 86400000, updatedAt: Date.now() - 18000000,
-  },
-  {
-    id: 'n6', title: 'Architecture Notes', folderId: 'f2', pinned: false,
-    content: `# Architecture Notes
-
-Notes on software architecture and design patterns.
-
-## Patterns
-
-### MVC (Model-View-Controller)
-- Separation of concerns
-- Used in web frameworks
-
-### Observer Pattern
-- Event-driven architecture
-- Pub/Sub systems
-
-## System Design
-
-- Microservices vs Monolith
-- Database selection criteria
-- Caching strategies
-
-## Links
-
-- [[Project Ideas]] — Implementation ideas
-- [[Markdown Basics]] — Documentation format
-- [[Reading List]] — Books on architecture
-
-#architecture #design #patterns`,
-    createdAt: Date.now() - 86400000 * 1.5, updatedAt: Date.now() - 20000000,
-  },
-];
-
-const DEMO_FOLDERS: Folder[] = [
-  { id: 'f1', name: 'Projects', parentId: null, collapsed: false },
-  { id: 'f2', name: 'Resources', parentId: null, collapsed: false },
 ];
 
 const DEFAULT_VAULT: Vault = {
@@ -401,8 +330,10 @@ const DEFAULT_VAULT: Vault = {
 
 function getInitialState(): AppState {
   const saved = loadState();
-  if (saved && saved.vaults && saved.vaults.length > 0 && saved.activeVaultId) return saved;
-  const defaultWorkspace = buildWorkspace(DEMO_NOTES, DEMO_FOLDERS, ['n1'], 'n1', false);
+  if (saved) return saved;
+  const defaultWorkspace = buildWorkspace(DEMO_NOTES, [
+    { id: 'f1', name: 'Projects', parentId: null, collapsed: false },
+  ], ['n1'], 'n1', false);
   return {
     vaults: [DEFAULT_VAULT],
     vaultData: { v1: defaultWorkspace },
@@ -411,6 +342,7 @@ function getInitialState(): AppState {
     folders: defaultWorkspace.folders,
     openTabs: defaultWorkspace.openTabs,
     activeNoteId: defaultWorkspace.activeNoteId,
+    secondaryNoteId: null,
     viewMode: 'edit',
     sidebarOpen: true,
     rightPanelOpen: false,
@@ -418,6 +350,7 @@ function getInitialState(): AppState {
     showCanvasView: false,
     showSearch: false,
     showCommandPalette: false,
+    showQuickSwitcher: false,
     settingsOpen: false,
     showAIChat: false,
     aiMessages: [],
@@ -436,6 +369,7 @@ type Action =
   | { type: 'OPEN_TAB'; payload: string }
   | { type: 'CLOSE_TAB'; payload: string }
   | { type: 'SET_ACTIVE_TAB'; payload: string }
+  | { type: 'SET_SECONDARY_TAB'; payload: string | null }
   | { type: 'UPDATE_NOTE'; payload: { id: string; content: string } }
   | { type: 'RENAME_NOTE'; payload: { id: string; title: string } }
   | { type: 'ADD_NOTE'; payload: Note }
@@ -451,6 +385,7 @@ type Action =
   | { type: 'TOGGLE_CANVAS_VIEW' }
   | { type: 'TOGGLE_SEARCH' }
   | { type: 'TOGGLE_COMMAND_PALETTE' }
+  | { type: 'TOGGLE_QUICK_SWITCHER' }
   | { type: 'TOGGLE_SETTINGS' }
   | { type: 'TOGGLE_AI_CHAT' }
   | { type: 'ADD_AI_MESSAGE'; payload: ChatMessage }
@@ -458,8 +393,8 @@ type Action =
   | { type: 'UPDATE_AI_SETTINGS'; payload: Partial<AISettings> }
   | { type: 'IMPORT_NOTES'; payload: { notes: Note[]; folders: Folder[] } }
   | { type: 'SET_FOLDER_HANDLE'; payload: boolean }
-  | { type: 'CREATE_FOLDER_VAULT'; payload: { id: string; name: string; color: string; folderPath: string } }
   | { type: 'UPDATE_CANVAS_CARDS'; payload: CanvasCard[] }
+  | { type: 'UPDATE_CANVAS_CONNECTIONS'; payload: CanvasConnection[] }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<FlintSettings> };
 
 function reducer(state: AppState, action: Action): AppState {
@@ -477,6 +412,7 @@ function reducer(state: AppState, action: Action): AppState {
       };
     }
     case 'UPDATE_CANVAS_CARDS': return updateCurrentWorkspace(state, workspace => ({ ...workspace, canvasCards: action.payload }));
+    case 'UPDATE_CANVAS_CONNECTIONS': return updateCurrentWorkspace(state, workspace => ({ ...workspace, canvasConnections: action.payload }));
     case 'OPEN_VAULT': {
       const vault = state.vaults.find(v => v.id === action.payload);
       if (!vault) return state;
@@ -510,6 +446,7 @@ function reducer(state: AppState, action: Action): AppState {
       });
     }
     case 'SET_ACTIVE_TAB': return updateCurrentWorkspace(state, workspace => ({ ...workspace, activeNoteId: action.payload }));
+    case 'SET_SECONDARY_TAB': return { ...state, secondaryNoteId: action.payload };
     case 'UPDATE_NOTE': return updateCurrentWorkspace(state, workspace => ({ ...workspace, notes: workspace.notes.map(n => n.id === action.payload.id ? { ...n, content: action.payload.content, updatedAt: Date.now() } : n) }));
     case 'RENAME_NOTE': return updateCurrentWorkspace(state, workspace => ({ ...workspace, notes: workspace.notes.map(n => n.id === action.payload.id ? { ...n, title: action.payload.title, updatedAt: Date.now() } : n) }));
     case 'ADD_NOTE': return updateCurrentWorkspace({ ...state, showGraphView: false }, workspace => ({ ...workspace, notes: [...workspace.notes, action.payload], openTabs: [...workspace.openTabs, action.payload.id], activeNoteId: action.payload.id }));
@@ -531,6 +468,7 @@ function reducer(state: AppState, action: Action): AppState {
     case 'TOGGLE_CANVAS_VIEW': return { ...state, showCanvasView: !state.showCanvasView, showGraphView: false };
     case 'TOGGLE_SEARCH': return { ...state, showSearch: !state.showSearch };
     case 'TOGGLE_COMMAND_PALETTE': return { ...state, showCommandPalette: !state.showCommandPalette };
+    case 'TOGGLE_QUICK_SWITCHER': return { ...state, showQuickSwitcher: !state.showQuickSwitcher };
     case 'TOGGLE_SETTINGS': return { ...state, settingsOpen: !state.settingsOpen };
     case 'TOGGLE_AI_CHAT': return { ...state, showAIChat: !state.showAIChat };
     case 'ADD_AI_MESSAGE': return { ...state, aiMessages: [...state.aiMessages, action.payload] };
@@ -543,17 +481,6 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'IMPORT_NOTES': return updateCurrentWorkspace(state, workspace => ({ ...workspace, ...buildWorkspace(action.payload.notes, action.payload.folders, [action.payload.notes[0]?.id].filter(Boolean) as string[], action.payload.notes[0]?.id || null, workspace.hasFolderHandle) }));
     case 'SET_FOLDER_HANDLE': return updateCurrentWorkspace(state, workspace => ({ ...workspace, hasFolderHandle: action.payload }));
-    case 'CREATE_FOLDER_VAULT': {
-      const vault: Vault = { id: action.payload.id, name: action.payload.name, color: action.payload.color, createdAt: Date.now(), lastOpened: Date.now(), isFolderVault: true, folderPath: action.payload.folderPath };
-      return {
-        ...state,
-        vaults: [...state.vaults, vault],
-        vaultData: {
-          ...state.vaultData,
-          [vault.id]: buildWorkspace([], [], [], null, true),
-        },
-      };
-    }
     default: return state;
   }
 }
@@ -562,7 +489,7 @@ interface StoreContextType {
   state: AppState;
   dispatch: React.Dispatch<Action>;
   createNote: (folderId?: string | null) => void;
-  openDailyNote: () => void;
+  openDailyNote: (date?: string) => void;
   createFolder: (name: string) => void;
   getNoteByTitle: (title: string) => Note | undefined;
   getBacklinks: (noteId: string) => Note[];
@@ -573,11 +500,9 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const initialized = useRef(false);
   const [state, dispatch] = useReducer(reducer, null, getInitialState);
 
   useEffect(() => {
-    if (!initialized.current) { initialized.current = true; return; }
     saveState(state);
   }, [state]);
 
@@ -586,9 +511,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'ADD_NOTE', payload: note });
   }, []);
 
-  const openDailyNote = useCallback(() => {
-    const now = new Date();
-    const title = now.toISOString().slice(0, 10);
+  const openDailyNote = useCallback((date?: string) => {
+    const now = date ? new Date(date) : new Date();
+    const title = date || now.toISOString().slice(0, 10);
     const folder = state.folders.find(f => f.name.toLowerCase() === 'daily notes');
     const existing = state.notes.find(note => note.title === title);
     if (existing) {
@@ -596,29 +521,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
+    const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
     const yesterdayTitle = yesterday.toISOString().slice(0, 10);
-
-    const tomorrow = new Date(now);
-    tomorrow.setDate(now.getDate() + 1);
+    const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
     const tomorrowTitle = tomorrow.toISOString().slice(0, 10);
 
     const folderId = folder?.id || generateId();
-    const note: Note = {
-      id: generateId(),
-      title,
-      content: `# ${title}\n\n<< [[${yesterdayTitle}]] | [[${tomorrowTitle}]] >>\n\n## Focus for Today\n- [ ] \n\n## Notes\n\n\n## Completed\n\n\n## Reflection\n\n`,
-      folderId,
-      pinned: false,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    if (!folder) {
-      dispatch({ type: 'ADD_FOLDER', payload: { id: folderId, name: 'Daily Notes', parentId: null, collapsed: false } });
-    }
+    let content = state.appSettings.dailyNoteTemplate || `# ${title}\n\n<< [[${yesterdayTitle}]] | [[${tomorrowTitle}]] >>\n\n## Focus\n- [ ] \n\n## Notes\n\n`;
+    content = content.replace(/{{date}}/g, title).replace(/{{yesterday}}/g, yesterdayTitle).replace(/{{tomorrow}}/g, tomorrowTitle);
+
+    const note: Note = { id: generateId(), title, content, folderId, pinned: false, createdAt: Date.now(), updatedAt: Date.now() };
+    if (!folder) dispatch({ type: 'ADD_FOLDER', payload: { id: folderId, name: 'Daily Notes', parentId: null, collapsed: false } });
     dispatch({ type: 'ADD_NOTE', payload: note });
-  }, [state.folders, state.notes]);
+  }, [state.folders, state.notes, state.appSettings.dailyNoteTemplate]);
 
   const createFolder = useCallback((name: string) => {
     const folder: Folder = { id: generateId(), name, parentId: null, collapsed: false };
@@ -644,8 +559,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const note = state.notes.find(n => n.id === noteId);
     if (!note) return [];
     const matches = note.content.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g);
-    const titles = new Set<string>();
-    for (const m of matches) titles.add(m[1]);
+    const titles = new Set([...matches].map(m => m[1]));
     return state.notes.filter(n => titles.has(n.title));
   }, [state.notes]);
 

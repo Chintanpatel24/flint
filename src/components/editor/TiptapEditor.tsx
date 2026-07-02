@@ -4,8 +4,8 @@ import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 import { WikilinkDecoration } from './tiptap/WikilinkDecoration';
 import { SlashCommand } from './tiptap/SlashCommand';
-import { useStore } from '../store';
-import { getHandle, writeMarkdownFile } from '../services/filesystem';
+import { useStore } from '../../store';
+import { getHandle, writeMarkdownFile } from '../../services/filesystem';
 
 export function TiptapEditor({ noteId }: { noteId: string }) {
   const { state, dispatch } = useStore();

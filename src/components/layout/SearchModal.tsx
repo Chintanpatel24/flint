@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useStore } from '../store';
+import { useStore } from '../../store';
 import { Search } from 'lucide-react';
 
 export function SearchModal() {

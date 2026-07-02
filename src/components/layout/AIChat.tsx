@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useStore } from '../store';
-import { askFlintAI, fetchOllamaModels, checkOllamaStatus, checkAgentStatus } from '../services/ollama';
-import { FlintLogo } from './FlintLogo';
+import { useStore } from '../../store';
+import { askFlintAI, fetchOllamaModels, checkOllamaStatus, checkAgentStatus } from '../../services/ollama';
+import { FlintLogo } from '../FlintLogo';
 import { X, Send, Trash2, User, Loader2, Settings, Wifi, Globe, Brain, BookOpen, Network, Sparkles, Zap, Cpu, Server, AlertTriangle } from 'lucide-react';
-import type { AIAction } from '../types';
+import type { AIAction } from '../../types';
 
 export function AIChat() {
   const { state, dispatch } = useStore();

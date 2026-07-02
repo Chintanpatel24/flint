@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useStore } from '../store';
-import { FlintLogo, FlintLogoLarge } from './FlintLogo';
+import { useStore } from '../../store';
+import { FlintLogo, FlintLogoLarge } from '../FlintLogo';
 import { X, Type, Save, AlignLeft, Hash, WrapText, CheckSquare, Download, Upload, Trash2, Info, Brain, Wifi, WifiOff, RefreshCw, Globe, FolderOpen, FolderPlus } from 'lucide-react';
-import { fetchOllamaModels, checkOllamaStatus, checkAgentStatus } from '../services/ollama';
-import type { Note, Folder, FlintSettings } from '../types';
+import { fetchOllamaModels, checkOllamaStatus, checkAgentStatus } from '../../services/ollama';
+import type { Note, Folder, FlintSettings } from '../../types';
 
 export function SettingsPanel() {
   const { state, dispatch } = useStore();

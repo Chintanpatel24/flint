@@ -1,6 +1,6 @@
-import { useStore } from '../store';
+import { useStore } from '../../store';
 import { HardDrive } from 'lucide-react';
-import { FlintLogo } from './FlintLogo';
+import { FlintLogo } from '../FlintLogo';
 
 export function StatusBar() {
   const { state } = useStore();

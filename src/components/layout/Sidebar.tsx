@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useStore } from '../store';
+import { useStore } from '../../store';
 import { FileText, Folder, FolderOpen, ChevronRight, ChevronDown, Plus, FolderPlus, Search, Pin, Trash2, CalendarDays, Pencil } from 'lucide-react';
 
 export function Sidebar() {
