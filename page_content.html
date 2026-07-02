@@ -1,0 +1,1095 @@
+<!DOCTYPE html><html lang="en"><head>
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' http://localhost:* http://127.0.0.1:* https://en.wikipedia.org https://*.wikipedia.org; font-src 'self' data:;">
+    <meta name="description" content="Flint — A secure, local-first knowledge base. Your notes, your data, your control.">
+    <title>Flint</title>
+    <link rel="icon" href="/flint-logo.png">
+  <style type="text/css" data-vite-dev-id="/app/src/index.css">/*! tailwindcss v4.1.17 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    --color-gray-300: oklch(87.2% 0.01 258.338);
+    --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
+    --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-800: oklch(27.8% 0.033 256.848);
+    --color-black: #000;
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --tracking-wider: 0.05em;
+    --animate-spin: spin 1s linear infinite;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .pointer-events-auto {
+    pointer-events: auto;
+  }
+  .visible {
+    visibility: visible;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .relative {
+    position: relative;
+  }
+  .inset-0 {
+    inset: calc(var(--spacing) * 0);
+  }
+  .top-2 {
+    top: calc(var(--spacing) * 2);
+  }
+  .right-2 {
+    right: calc(var(--spacing) * 2);
+  }
+  .bottom-2 {
+    bottom: calc(var(--spacing) * 2);
+  }
+  .left-2 {
+    left: calc(var(--spacing) * 2);
+  }
+  .mb-3 {
+    margin-bottom: calc(var(--spacing) * 3);
+  }
+  .block {
+    display: block;
+  }
+  .contents {
+    display: contents;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .hidden {
+    display: none;
+  }
+  .inline {
+    display: inline;
+  }
+  .inline-block {
+    display: inline-block;
+  }
+  .table {
+    display: table;
+  }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
+  .h-full {
+    height: 100%;
+  }
+  .h-screen {
+    height: 100vh;
+  }
+  .min-h-0 {
+    min-height: calc(var(--spacing) * 0);
+  }
+  .w-1\/2 {
+    width: calc(1/2 * 100%);
+  }
+  .w-7 {
+    width: calc(var(--spacing) * 7);
+  }
+  .w-full {
+    width: 100%;
+  }
+  .max-w-none {
+    max-width: none;
+  }
+  .min-w-0 {
+    min-width: calc(var(--spacing) * 0);
+  }
+  .flex-1 {
+    flex: 1;
+  }
+  .shrink-0 {
+    flex-shrink: 0;
+  }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .animate-spin {
+    animation: var(--animate-spin);
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .resize {
+    resize: both;
+  }
+  .grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .gap-0\.5 {
+    gap: calc(var(--spacing) * 0.5);
+  }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
+  }
+  .gap-y-1 {
+    row-gap: calc(var(--spacing) * 1);
+  }
+  .overflow-auto {
+    overflow: auto;
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  .rounded {
+    border-radius: 0.25rem;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .border-none {
+    --tw-border-style: none;
+    border-style: none;
+  }
+  .border-\[\#2e2e31\] {
+    border-color: #2e2e31;
+  }
+  .border-\[\#7f6df2\]\/50 {
+    border-color: color-mix(in oklab, #7f6df2 50%, transparent);
+  }
+  .bg-\[\#0f0f11\] {
+    background-color: #0f0f11;
+  }
+  .bg-\[\#7f6df2\] {
+    background-color: #7f6df2;
+  }
+  .bg-\[\#09090b\] {
+    background-color: #09090b;
+  }
+  .bg-\[\#18181a\] {
+    background-color: #18181a;
+  }
+  .bg-black\/60 {
+    background-color: color-mix(in srgb, #000 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 60%, transparent);
+    }
+  }
+  .bg-white {
+    background-color: var(--color-white);
+  }
+  .p-1 {
+    padding: calc(var(--spacing) * 1);
+  }
+  .p-1\.5 {
+    padding: calc(var(--spacing) * 1.5);
+  }
+  .p-2 {
+    padding: calc(var(--spacing) * 2);
+  }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
+  }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
+  }
+  .px-1 {
+    padding-inline: calc(var(--spacing) * 1);
+  }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
+  }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .text-\[9px\] {
+    font-size: 9px;
+  }
+  .text-\[10px\] {
+    font-size: 10px;
+  }
+  .text-\[11px\] {
+    font-size: 11px;
+  }
+  .text-\[12px\] {
+    font-size: 12px;
+  }
+  .font-bold {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .tracking-wider {
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+  }
+  .break-all {
+    word-break: break-all;
+  }
+  .text-\[\#555\] {
+    color: #555;
+  }
+  .text-gray-300 {
+    color: var(--color-gray-300);
+  }
+  .text-gray-400 {
+    color: var(--color-gray-400);
+  }
+  .text-gray-500 {
+    color: var(--color-gray-500);
+  }
+  .text-gray-600 {
+    color: var(--color-gray-600);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .capitalize {
+    text-transform: capitalize;
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .italic {
+    font-style: italic;
+  }
+  .tabular-nums {
+    --tw-numeric-spacing: tabular-nums;
+    font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
+  }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .opacity-0 {
+    opacity: 0%;
+  }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
+  .transition {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .hover\:bg-\[\#6b5cd9\] {
+    &:hover {
+      @media (hover: hover) {
+        background-color: #6b5cd9;
+      }
+    }
+  }
+  .hover\:bg-black\/80 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, #000 80%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-black) 80%, transparent);
+        }
+      }
+    }
+  }
+  .hover\:bg-gray-800 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-800);
+      }
+    }
+  }
+  .hover\:bg-white\/5 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, #fff 5%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+        }
+      }
+    }
+  }
+  .hover\:text-gray-300 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-gray-300);
+      }
+    }
+  }
+  .hover\:opacity-100 {
+    &:hover {
+      @media (hover: hover) {
+        opacity: 100%;
+      }
+    }
+  }
+  .focus\:border-\[\#7f6df2\] {
+    &:focus {
+      border-color: #7f6df2;
+    }
+  }
+  .focus\:outline-none {
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+    }
+  }
+}
+:root {
+  --bg-deep: #121418;
+  --bg-base: #16181d;
+  --bg-surface: #1b1f26;
+  --bg-elevated: #21262f;
+  --bg-hover: #272d38;
+  --bg-active: #2f3642;
+  --border: #303744;
+  --border-light: #3a4250;
+  --border-focus: #4c5668;
+  --text: #d7dce5;
+  --text-secondary: #a3acba;
+  --text-muted: #7d8696;
+  --text-dim: #626b79;
+  --accent: #8fa1bf;
+  --accent-hover: #b5c0d5;
+  --accent-dim: #64728b;
+  --editor-rule: rgba(185, 196, 215, 0.075);
+  --editor-guide: rgba(164, 176, 198, 0.18);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+body[data-theme='dark'] {
+  --bg-deep: #121418;
+  --bg-base: #16181d;
+  --bg-surface: #1b1f26;
+  --bg-elevated: #21262f;
+  --bg-hover: #272d38;
+  --bg-active: #2f3642;
+  --border: #303744;
+  --border-light: #3a4250;
+  --border-focus: #4c5668;
+  --text: #d7dce5;
+  --text-secondary: #a3acba;
+  --text-muted: #7d8696;
+  --text-dim: #626b79;
+  --accent: #8fa1bf;
+  --accent-hover: #b5c0d5;
+  --accent-dim: #64728b;
+  --editor-rule: rgba(185, 196, 215, 0.075);
+  --editor-guide: rgba(164, 176, 198, 0.18);
+}
+body[data-theme='light'] {
+  --bg-deep: #eef2f8;
+  --bg-base: #f5f7fb;
+  --bg-surface: #ffffff;
+  --bg-elevated: #edf1f8;
+  --bg-hover: #e3e9f3;
+  --bg-active: #d7e0ee;
+  --border: #c7d1e0;
+  --border-light: #b8c5d8;
+  --border-focus: #8ba0c0;
+  --text: #1f2937;
+  --text-secondary: #425066;
+  --text-muted: #66758f;
+  --text-dim: #8090a6;
+  --accent: #5f7fb4;
+  --accent-hover: #4f6ea3;
+  --accent-dim: #7e96be;
+  --editor-rule: rgba(77, 97, 132, 0.08);
+  --editor-guide: rgba(95, 127, 180, 0.22);
+}
+body[data-theme='rose'] {
+  --bg-deep: #1f1820;
+  --bg-base: #241c26;
+  --bg-surface: #2e2431;
+  --bg-elevated: #382b3c;
+  --bg-hover: #433248;
+  --bg-active: #514058;
+  --border: #5a435d;
+  --border-light: #6c5170;
+  --border-focus: #9d6fa0;
+  --text: #f0ddea;
+  --text-secondary: #d7afcf;
+  --text-muted: #b78ead;
+  --text-dim: #8f6f88;
+  --accent: #d78ebf;
+  --accent-hover: #f0b1db;
+  --accent-dim: #a96b95;
+  --editor-rule: rgba(230, 169, 212, 0.08);
+  --editor-guide: rgba(215, 142, 191, 0.24);
+}
+body[data-theme='ocean'] {
+  --bg-deep: #101822;
+  --bg-base: #12202d;
+  --bg-surface: #172a39;
+  --bg-elevated: #1c3447;
+  --bg-hover: #214159;
+  --bg-active: #28506f;
+  --border: #355670;
+  --border-light: #446984;
+  --border-focus: #5c88aa;
+  --text: #d8e8f4;
+  --text-secondary: #a9c4d8;
+  --text-muted: #86a7c0;
+  --text-dim: #6887a2;
+  --accent: #7db3d8;
+  --accent-hover: #a8d2ec;
+  --accent-dim: #5f89a9;
+  --editor-rule: rgba(168, 210, 236, 0.08);
+  --editor-guide: rgba(125, 179, 216, 0.24);
+}
+body[data-theme='forest'] {
+  --bg-deep: #131914;
+  --bg-base: #182019;
+  --bg-surface: #1f2a21;
+  --bg-elevated: #273228;
+  --bg-hover: #314035;
+  --bg-active: #3e5143;
+  --border: #435447;
+  --border-light: #4f6555;
+  --border-focus: #7ca386;
+  --text: #d8e8db;
+  --text-secondary: #abc5b0;
+  --text-muted: #86a08a;
+  --text-dim: #677d6a;
+  --accent: #8bbf91;
+  --accent-hover: #b2d7b5;
+  --accent-dim: #6e9673;
+  --editor-rule: rgba(178, 215, 181, 0.08);
+  --editor-guide: rgba(139, 191, 145, 0.24);
+}
+body[data-theme='amber'] {
+  --bg-deep: #1d160f;
+  --bg-base: #241c14;
+  --bg-surface: #2d241b;
+  --bg-elevated: #382c21;
+  --bg-hover: #473728;
+  --bg-active: #59442f;
+  --border: #6a5138;
+  --border-light: #7b6245;
+  --border-focus: #b38753;
+  --text: #f0e1cf;
+  --text-secondary: #d7be9f;
+  --text-muted: #b89a77;
+  --text-dim: #8f765a;
+  --accent: #d2a06a;
+  --accent-hover: #ebbc86;
+  --accent-dim: #9f7a52;
+  --editor-rule: rgba(235, 188, 134, 0.08);
+  --editor-guide: rgba(210, 160, 106, 0.24);
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-base);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+#root {
+  background: radial-gradient(circle at top left, rgba(143, 161, 191, 0.08), transparent 28%), radial-gradient(circle at bottom right, rgba(110, 124, 149, 0.08), transparent 24%), var(--bg-base);
+}
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+::selection {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slideRight {
+  from {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+.animate-scale-in {
+  animation: scaleIn 0.15s ease-out;
+}
+.animate-slide-right {
+  animation: slideRight 0.2s ease-out;
+}
+.flint-editor {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 70px, var(--editor-guide) 70px, var(--editor-guide) 71px, transparent 71px), repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.75em - 1px), var(--editor-rule) calc(1.75em - 1px), var(--editor-rule) 1.75em), linear-gradient(180deg, rgba(255,255,255,0.015), rgba(0,0,0,0.03)), var(--bg-base);
+  color: var(--text);
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 32px 48px 32px 88px;
+  font-size: 15px;
+  line-height: 1.75;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', monospace;
+  tab-size: 2;
+  caret-color: var(--accent-hover);
+}
+.flint-editor::placeholder {
+  color: var(--text-dim);
+}
+.flint-editor::selection {
+  background: rgba(255,255,255,0.08);
+}
+.flint-preview {
+  padding: 32px 48px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent 240px);
+}
+.flint-preview h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0.8em 0 0.4em;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3em;
+}
+.flint-preview h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0.8em 0 0.4em;
+  color: var(--text);
+}
+.flint-preview h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 0.6em 0 0.3em;
+  color: var(--text-secondary);
+}
+.flint-preview h4 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0.5em 0 0.3em;
+  color: var(--text-secondary);
+}
+.flint-preview p {
+  margin: 0.6em 0;
+}
+.flint-preview a {
+  color: #bbb;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.flint-preview a:hover {
+  color: #fff;
+  border-bottom-color: #888;
+}
+.flint-preview strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.flint-preview em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+.flint-preview del {
+  color: var(--text-muted);
+}
+.flint-preview blockquote {
+  border-left: 3px solid #333;
+  padding: 4px 16px;
+  margin: 0.8em 0;
+  background: rgba(255,255,255,0.02);
+  border-radius: 0 4px 4px 0;
+  color: var(--text-secondary);
+}
+.flint-preview ul, .flint-preview ol {
+  padding-left: 24px;
+  margin: 0.5em 0;
+}
+.flint-preview li {
+  margin: 0.2em 0;
+}
+.flint-preview li::marker {
+  color: var(--text-muted);
+}
+.flint-preview code {
+  background: #111;
+  color: #ccc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+.flint-preview pre {
+  background: #050505;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin: 1em 0;
+  overflow-x: auto;
+}
+.flint-preview pre code {
+  background: none;
+  color: var(--text);
+  padding: 0;
+}
+.flint-preview hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5em 0;
+}
+.flint-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+.flint-preview th, .flint-preview td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: left;
+}
+.flint-preview th {
+  background: var(--bg-elevated);
+  font-weight: 600;
+}
+.flint-preview img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+.flint-preview input[type="checkbox"] {
+  accent-color: #888;
+  margin-right: 6px;
+  transform: scale(1.1);
+}
+.wiki-link {
+  color: #bbb;
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255,255,255,0.2);
+  transition: all 0.15s;
+}
+.wiki-link:hover {
+  color: #fff;
+  border-bottom-color: #888;
+  background: rgba(255,255,255,0.04);
+  border-radius: 2px;
+}
+.wiki-link.unresolved {
+  color: #444;
+  border-bottom-color: #333;
+  opacity: 0.6;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ordinal {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-slashed-zero {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-numeric-figure {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-numeric-spacing {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-numeric-fraction {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
+      --tw-border-style: solid;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-ordinal: initial;
+      --tw-slashed-zero: initial;
+      --tw-numeric-figure: initial;
+      --tw-numeric-spacing: initial;
+      --tw-numeric-fraction: initial;
+      --tw-outline-style: solid;
+    }
+  }
+}
+</style><style id="flint-dynamic-style"></style></head>
+  <body>
+    <div id="root"><div class="h-screen flex flex-col overflow-hidden" style="background: var(--bg-base); color: var(--text);"><div class="flex-1 flex min-h-0"><div class="flex flex-col items-center py-2 gap-0.5 shrink-0" style="width: 50px; background: var(--bg-surface); border-right: 1px solid var(--border); box-shadow: rgba(255, 255, 255, 0.03) -1px 0px 0px inset;"><button style="width: 36px; height: 36px; border-radius: 8px; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid var(--border-light); cursor: pointer;"><img alt="Flint" width="18" height="18" draggable="false" src="./flint-logo.png?t=1783007859295" style="object-fit: contain; pointer-events: none; user-select: none;"></button><button title="Toggle sidebar (Ctrl+\)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: var(--bg-elevated); color: var(--text); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-open" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m14 9 3 3-3 3"></path></svg></button><button title="Search (Ctrl+Shift+F)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg></button><button title="New note (Ctrl+N)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button><button title="Daily note (Ctrl+Shift+D)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path></svg></button><button title="Graph view (Ctrl+G)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-waypoints" aria-hidden="true"><path d="m10.586 5.414-5.172 5.172"></path><path d="m18.586 13.414-5.172 5.172"></path><path d="M6 12h12"></path><circle cx="12" cy="20" r="2"></circle><circle cx="12" cy="4" r="2"></circle><circle cx="20" cy="12" r="2"></circle><circle cx="4" cy="12" r="2"></circle></svg></button><button title="Canvas (Ctrl+Shift+C)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg></button><button title="Command palette (Ctrl+P)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-command" aria-hidden="true"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"></path></svg></button><button title="Flint AI (Ctrl+J)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain" aria-hidden="true"><path d="M12 18V5"></path><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"></path><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"></path><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"></path><path d="M18 18a4 4 0 0 0 2-7.464"></path><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"></path><path d="M6 18a4 4 0 0 1-2-7.464"></path><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"></path></svg></button><div class="flex-1"></div><button title="Toggle right panel" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-right-open" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M15 3v18"></path><path d="m10 15-3-3 3-3"></path></svg></button><button title="Settings (Ctrl+,)" class="flex items-center justify-center" style="width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div><div class="animate-slide-right flex flex-col shrink-0" style="width: 268px; background: var(--bg-surface); border-right: 1px solid var(--border); box-shadow: rgba(255, 255, 255, 0.03) -1px 0px 0px inset;"><div style="padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--bg-surface);"><label for="sidebar-search" class="sr-only">Search notes in sidebar</label><div class="flex items-center gap-2" style="padding: 6px 8px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 7px; box-shadow: rgba(255, 255, 255, 0.02) 0px 1px 0px inset;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search" aria-hidden="true" style="color: var(--text-dim); flex-shrink: 0;"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input id="sidebar-search" placeholder="Search notes..." aria-label="Filter notes by title" type="text" value="" style="flex: 1 1 0%; background: none; border: none; color: var(--text); font-size: 12px; outline: none;"></div></div><div class="flex items-center gap-1" style="padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--bg-surface);"><button title="New note" aria-label="Create a new note" style="padding: 4px 9px; background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--text-secondary); font-size: 11px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Note</button><button title="New folder" aria-label="Create a new folder" style="padding: 4px 9px; background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--text-secondary); font-size: 11px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-plus" aria-hidden="true"><path d="M12 10v6"></path><path d="M9 13h6"></path><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg> Folder</button><button title="Daily notes calendar" aria-label="Toggle calendar view" style="padding: 4px 9px; background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--text-secondary); font-size: 11px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path></svg> Calendar</button></div><div class="flex-1 overflow-y-auto" style="padding: 6px 0px;"><div style="padding: 4px 12px; font-size: 10px; font-weight: 600; color: rgb(51, 51, 51); text-transform: uppercase; letter-spacing: 0.06em;">Pinned</div><div class="flex items-center gap-2 cursor-pointer" role="treeitem" aria-selected="true" tabindex="0" draggable="true" style="padding: 5px 12px; background: rgb(35, 41, 52); border-left: 2px solid rgb(147, 164, 192); transition: 0.08s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true" style="color: rgb(199, 209, 222); flex-shrink: 0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="font-size: 12px; color: rgb(238, 242, 248); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Welcome to Flint</span></div><div><div class="flex items-center gap-1 cursor-pointer" aria-label="Projects" style="padding: 4px 12px; color: rgb(102, 102, 102); font-size: 12px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-open" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg><span style="margin-left: 4px;">Projects</span><span style="margin-left: auto; font-size: 10px; color: rgb(51, 51, 51);">2</span></div><div class="flex items-center gap-2 cursor-pointer" role="treeitem" aria-selected="false" tabindex="-1" draggable="true" style="padding: 5px 12px 5px 28px; background: transparent; border-left: 2px solid transparent; transition: 0.08s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true" style="color: rgb(123, 134, 152); flex-shrink: 0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="font-size: 12px; color: rgb(176, 185, 200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Project Ideas</span></div><div class="flex items-center gap-2 cursor-pointer" role="treeitem" aria-selected="false" tabindex="-1" draggable="true" style="padding: 5px 12px 5px 28px; background: transparent; border-left: 2px solid transparent; transition: 0.08s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true" style="color: rgb(123, 134, 152); flex-shrink: 0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="font-size: 12px; color: rgb(176, 185, 200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Daily Notes</span></div></div><div><div class="flex items-center gap-1 cursor-pointer" aria-label="Resources" style="padding: 4px 12px; color: rgb(102, 102, 102); font-size: 12px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-open" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg><span style="margin-left: 4px;">Resources</span><span style="margin-left: auto; font-size: 10px; color: rgb(51, 51, 51);">2</span></div><div class="flex items-center gap-2 cursor-pointer" role="treeitem" aria-selected="false" tabindex="-1" draggable="true" style="padding: 5px 12px 5px 28px; background: transparent; border-left: 2px solid transparent; transition: 0.08s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true" style="color: rgb(123, 134, 152); flex-shrink: 0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="font-size: 12px; color: rgb(176, 185, 200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Reading List</span></div><div class="flex items-center gap-2 cursor-pointer" role="treeitem" aria-selected="false" tabindex="-1" draggable="true" style="padding: 5px 12px 5px 28px; background: transparent; border-left: 2px solid transparent; transition: 0.08s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true" style="color: rgb(123, 134, 152); flex-shrink: 0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="font-size: 12px; color: rgb(176, 185, 200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Architecture Notes</span></div></div><div class="flex items-center gap-2 cursor-pointer" role="treeitem" aria-selected="false" tabindex="-1" draggable="true" style="padding: 5px 12px; background: transparent; border-left: 2px solid transparent; transition: 0.08s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true" style="color: rgb(123, 134, 152); flex-shrink: 0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="font-size: 12px; color: rgb(176, 185, 200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Markdown Basics</span></div><div style="padding: 8px 12px 4px; font-size: 10px; font-weight: 600; color: rgb(51, 51, 51); text-transform: uppercase; letter-spacing: 0.06em; border-top: 1px solid rgb(26, 26, 26); margin-top: 4px;">Tags</div><div style="padding: 0px 12px 8px; display: flex; flex-wrap: wrap; gap: 4px;"><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#welcome</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#getting</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#markdown</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#reference</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#formatting</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#projects</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#ideas</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#brainstorm</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#daily</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#journal</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#template</span><span style="padding: 2px 6px; background: rgb(17, 17, 17); border: 1px solid rgb(26, 26, 26); border-radius: 3px; font-size: 10px; color: rgb(85, 85, 85);">#reading</span></div></div></div><div class="flex-1 flex min-w-0" style="background: var(--bg-base);"><div class="flex-1 flex flex-col min-w-0" style="background: var(--bg-base); border-left: none;"><div class="flex items-center px-4 shrink-0" style="height: 38px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--bg-elevated), var(--bg-base));"><span style="font-size: 13px; font-weight: 500; color: var(--text); flex: 1 1 0%;">Welcome to Flint</span><div class="flex items-center gap-1"><button title="Split right" style="padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 11px; color: var(--text-dim);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-columns2 lucide-columns-2" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 3v18"></path></svg></button><div style="width: 1px; height: 16px; background: var(--border); margin: 0px 4px;"></div><button title="Edit" class="flex items-center gap-1" style="padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 11px; background: var(--bg-elevated); color: var(--text); transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-line" aria-hidden="true"><path d="M13 21h8"></path><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg></button><button title="Split" class="flex items-center gap-1" style="padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 11px; background: transparent; color: var(--text-dim); transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-columns2 lucide-columns-2" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 3v18"></path></svg></button><button title="Preview" class="flex items-center gap-1" style="padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 11px; background: transparent; color: var(--text-dim); transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></div><div class="flex items-center gap-0.5 px-4 shrink-0" style="height: 34px; border-bottom: 1px solid var(--border); background: var(--bg-surface);"><button title="Bold" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bold" aria-hidden="true"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path></svg></button><button title="Italic" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-italic" aria-hidden="true"><line x1="19" x2="10" y1="4" y2="4"></line><line x1="14" x2="5" y1="20" y2="20"></line><line x1="15" x2="9" y1="4" y2="20"></line></svg></button><button title="Heading" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heading2 lucide-heading-2" aria-hidden="true"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path><path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1"></path></svg></button><button title="Quote" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-quote" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path></svg></button><button title="Code" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code" aria-hidden="true"><path d="m16 18 6-6-6-6"></path><path d="m8 6-6 6 6 6"></path></svg></button><button title="Link" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2 lucide-link-2" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"></path><path d="M15 7h2a5 5 0 1 1 0 10h-2"></path><line x1="8" x2="16" y1="12" y2="12"></line></svg></button><button title="List" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list" aria-hidden="true"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></button><button title="Wiki Link" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brackets" aria-hidden="true"><path d="M16 3h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-3"></path><path d="M8 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3"></path></svg></button><button title="Tag" style="padding: 4px 6px; background: none; border: none; color: var(--text-dim); cursor: pointer; border-radius: 5px; display: flex; align-items: center; transition: 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hash" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"></line><line x1="4" x2="20" y1="15" y2="15"></line><line x1="10" x2="8" y1="3" y2="21"></line><line x1="16" x2="14" y1="3" y2="21"></line></svg></button></div><div class="flex shrink-0" style="height: 34px; border-bottom: 1px solid var(--border); background: var(--bg-surface); overflow: hidden;"><div class="flex items-center gap-1 cursor-pointer" style="padding: 0px 12px; border-right: 1px solid var(--border); background: var(--bg-elevated); border-bottom: 2px solid var(--accent); max-width: 180px; min-width: 108px; transition: 0.08s;"><span style="flex: 1 1 0%; font-size: 11px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Welcome to Flint</span><button aria-label="Close tab: Welcome to Flint" style="background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 2px; display: flex; border-radius: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div></div><div class="flex-1 min-h-0 flex"><div class="flex-1" style="border-right: none; overflow: auto; background: var(--bg-base);"><textarea class="flint-editor" placeholder="Start writing..." spellcheck="false" style="box-shadow: rgba(255, 255, 255, 0.02) 0px 1px 0px inset;"># Welcome to Flint
+
+Flint is your **secure, local knowledge base** — all data stays on your device.
+
+## Getting Started
+
+- Create new notes with **Ctrl+N** or the **+** button
+- Link notes with `[[Note Name]]` syntax
+- Visualize connections in **Graph View** (Ctrl+G)
+- Search all notes with **Ctrl+Shift+F**
+- Command palette with **Ctrl+P**
+
+## Key Features
+
+- **Wiki Links**: `[[note name]]` connects notes
+- **Graph View**: Visual knowledge network
+- **Auto-Save**: Automatic &amp; persistent
+- **Tags**: Use #welcome #getting-started
+- **Markdown**: Full support with live preview
+- **Local Only**: 100% offline, zero cloud
+
+## Explore
+
+- [[Markdown Basics]] — Formatting guide
+- [[Project Ideas]] — Brainstorming notes
+- [[Daily Notes]] — Journal template
+- [[Reading List]] — Books &amp; articles
+- [[Architecture Notes]] — Software design
+
+&gt; "The only way to do great work is to love what you do."</textarea></div></div></div></div></div><div class="flex items-center justify-between shrink-0" style="height: 26px; padding: 0px 12px; background: var(--bg-surface); border-top: 1px solid var(--border); font-size: 11px; color: var(--text-secondary);"><div class="flex items-center gap-4"><span>143 words</span><span>897 chars</span></div><div class="flex items-center gap-4"><span style="color: var(--text-secondary);">Auto-save on</span><div class="flex items-center gap-1"><img alt="Flint" width="10" height="10" draggable="false" src="./flint-logo.png?t=1783007859295" style="object-fit: contain; pointer-events: none; user-select: none;"><span style="color: var(--text-secondary);">Flint v1.0</span></div></div></div></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  
+
+</body></html>
