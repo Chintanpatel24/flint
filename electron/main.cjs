@@ -1,6 +1,3 @@
-// Flint Electron desktop wrapper.
-// .cjs keeps this file CommonJS regardless of package module settings.
-
 const { app, BrowserWindow, Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -24,6 +21,11 @@ function startAgent() {
   const agentScript = path.join(agentDir, 'agent.py');
   const bundledAgent = path.join(APP_DIR, 'bin', process.platform === 'win32' ? 'agent.exe' : 'agent');
 
+  // Check for venv python first (created by improved installer)
+  const venvPython = process.platform === 'win32'
+    ? path.join(APP_DIR, '..', 'venv', 'Scripts', 'python.exe')
+    : path.join(APP_DIR, '..', 'venv', 'bin', 'python3');
+
   if (fs.existsSync(bundledAgent)) {
     console.log('[Flint] Starting bundled AI agent...');
     agentProcess = spawn(bundledAgent, [], {
@@ -34,13 +36,26 @@ function startAgent() {
     });
   } else if (fs.existsSync(agentScript)) {
     console.log('[Flint] Starting Python AI agent...');
-    const pythonCandidates = process.platform === 'win32' ? ['python', 'py'] : ['python3', 'python'];
-    const pythonCmd = pythonCandidates.find(commandExists);
+
+    let pythonCmd = null;
+    let pythonArgs = [agentScript];
+
+    if (fs.existsSync(venvPython)) {
+      pythonCmd = venvPython;
+      console.log('[Flint] Using venv Python:', venvPython);
+    } else {
+      const pythonCandidates = process.platform === 'win32' ? ['python', 'py'] : ['python3', 'python'];
+      pythonCmd = pythonCandidates.find(commandExists);
+      if (pythonCmd === 'py') {
+        pythonArgs = ['-3', agentScript];
+      }
+    }
+
     if (!pythonCmd) {
       console.log('[Flint] Python was not found. Note features remain available.');
       return;
     }
-    const pythonArgs = pythonCmd === 'py' ? ['-3', agentScript] : [agentScript];
+
     agentProcess = spawn(pythonCmd, pythonArgs, {
       cwd: agentDir,
       env: { ...process.env },

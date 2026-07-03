@@ -1,20 +1,8 @@
 import type { Note, AIAction, AISettings } from '../types';
 
-// ============================================================
-// Flint AI Service — 3-Level Fallback
-// 1. Python Agent (localhost:5100) → full AI + web + memory
-// 2. Direct Ollama (localhost:11434) → AI only
-// 3. Browser built-in → note search only
-// ============================================================
-
 const AGENT_URL = 'http://127.0.0.1:5100';
 const DEFAULT_OLLAMA = 'http://127.0.0.1:11434';
 
-function deriveLocalModelAlias(settings: AISettings): string {
-  if (settings.model.trim()) return settings.model.trim();
-  const fileName = settings.localModelPath.split(/[\\/]/).pop() || '';
-  return fileName.replace(/\.gguf$/i, '') || 'local-gguf';
-}
 
 function timeout(ms: number) {
   return new Promise<never>((_, reject) =>
@@ -170,10 +158,6 @@ export async function askFlintAI(
   onDone: (fullContent: string, webResults?: string, usedOllama?: boolean, actions?: AIAction[]) => void,
   onError: (err: string) => void,
 ): Promise<void> {
-  if (settings.provider === 'local-gguf' && !settings.localModelPath.trim()) {
-    onError('Select a GGUF file path first so Flint can route the request through the local self-hosted agent.');
-    return;
-  }
 
   const notesData = notes.map(n => ({
     id: n.id,
@@ -187,13 +171,10 @@ export async function askFlintAI(
     activeNoteId,
     settings: {
       provider: settings.provider,
-      model: settings.provider === 'local-gguf' ? deriveLocalModelAlias(settings) : settings.model,
+      model: settings.model,
       ollamaUrl: settings.ollamaUrl || DEFAULT_OLLAMA,
       apiKey: settings.apiKey,
       apiBaseUrl: settings.apiBaseUrl,
-      localModelPath: settings.localModelPath,
-      localModelContext: settings.localModelContext,
-      localModelThreads: settings.localModelThreads,
       maxOutputTokens: settings.maxOutputTokens,
       temperature: settings.temperature,
       maxContextNotes: settings.maxContextNotes,
@@ -264,10 +245,6 @@ export async function askFlintAI(
     throw new Error('Empty response from agent');
   } catch (agentErr) {
     console.warn('[Flint AI] Agent failed:', agentErr instanceof Error ? agentErr.message : agentErr);
-    if (settings.provider === 'local-gguf') {
-      onError('Local GGUF runs through Flint\'s self-hosted agent. Start the agent, then use Check connection in Settings and try again.');
-      return;
-    }
   }
 
   // ── Level 2: Try Direct Ollama ─────────────────────────

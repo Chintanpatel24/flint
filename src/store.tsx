@@ -2,16 +2,13 @@ import { createContext, useContext, useReducer, useEffect, useRef, useCallback, 
 import type { Note, Folder, Vault, AppState, ChatMessage, AISettings, VaultWorkspace, CanvasCard, FlintSettings, CanvasConnection } from './types';
 
 const STORAGE_KEY = 'flint-data';
-const SUPPORTED_AI_PROVIDERS = ['ollama', 'openai', 'gemini', 'openai-compatible', 'local-gguf'] as const;
+const SUPPORTED_AI_PROVIDERS = ['ollama', 'openai', 'gemini', 'openai-compatible'] as const;
 
 const DEFAULT_AI_SETTINGS: AISettings = {
   provider: 'ollama',
   ollamaUrl: 'http://localhost:11434',
   apiKey: '',
   apiBaseUrl: '',
-  localModelPath: '',
-  localModelContext: 2048,
-  localModelThreads: 4,
   maxOutputTokens: 180,
   model: '',
   maxContextNotes: 8,

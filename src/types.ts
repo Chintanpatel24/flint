@@ -30,9 +30,9 @@ export interface AISettings {
   ollamaUrl: string;
   apiKey: string;
   apiBaseUrl: string;
-  localModelPath: string;
-  localModelContext: number;
-  localModelThreads: number;
+  localModelPath?: string;
+  localModelContext?: number;
+  localModelThreads?: number;
   maxOutputTokens: number;
   model: string;
   maxContextNotes: number;
@@ -48,14 +48,18 @@ export interface FlintSettings {
   showLineNumbers: boolean;
   tabSize: number;
   wordWrap: boolean;
-  theme: 'dark' | 'light' | 'sepia';
-  editorStyle: 'default' | 'tiptap';
+  theme: 'dark' | 'light' | 'sepia' | 'rose' | 'ocean' | 'forest' | 'amber';
+  editorStyle: 'default' | 'tiptap' | 'split';
   dailyNoteTemplate?: string;
 }
 
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  id?: string;
+  role: 'user' | 'assistant' | 'system';
   content: string;
+  timestamp?: number;
+  noteContext?: string[];
+  webResults?: string;
 }
 
 export interface VaultWorkspace {
@@ -65,6 +69,7 @@ export interface VaultWorkspace {
   activeNoteId: string | null;
   hasFolderHandle: boolean;
   canvasCards: CanvasCard[];
+  canvasConnections: CanvasConnection[];
 }
 
 export interface CanvasCard {

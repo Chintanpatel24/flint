@@ -144,11 +144,8 @@ export function AIChat() {
 
   const activeNote = notes.find(n => n.id === activeNoteId);
   const isCredentialProvider = aiSettings.provider === 'openai' || aiSettings.provider === 'gemini' || aiSettings.provider === 'openai-compatible';
-  const isLocalProvider = aiSettings.provider === 'local-gguf';
   const isApiProvider = isCredentialProvider;
   const hasApiConfig = !!aiSettings.apiKey && !!aiSettings.model;
-  const hasLocalConfig = !!aiSettings.localModelPath;
-  const localModelLabel = aiSettings.localModelPath.split(/[\\/]/).pop() || 'model.gguf';
 
   const sendMessage = useCallback(async () => {
     const trimmed = input.trim();
@@ -236,9 +233,8 @@ export function AIChat() {
   const isAgentMode = agentStatus === 'agent-up';
   const isOllamaMode = isAgentMode && aiSettings.provider === 'ollama' && ollamaStatus === 'connected' && !!aiSettings.model;
   const isCloudMode = isAgentMode && isApiProvider && hasApiConfig;
-  const isLocalMode = isAgentMode && isLocalProvider && hasLocalConfig;
-  const isConfiguredMode = isOllamaMode || isCloudMode || isLocalMode;
-  const providerName = aiSettings.provider === 'openai' ? 'OpenAI' : aiSettings.provider === 'gemini' ? 'Gemini' : aiSettings.provider === 'openai-compatible' ? 'Custom API' : aiSettings.provider === 'local-gguf' ? 'Local GGUF' : 'Ollama';
+  const isConfiguredMode = isOllamaMode || isCloudMode;
+  const providerName = aiSettings.provider === 'openai' ? 'OpenAI' : aiSettings.provider === 'gemini' ? 'Gemini' : aiSettings.provider === 'openai-compatible' ? 'Custom API' : 'Ollama';
 
   return (
     <div style={{
@@ -265,8 +261,6 @@ export function AIChat() {
             {isConfiguredMode ? <Wifi size={8} /> : isAgentMode ? <Server size={8} /> : <Cpu size={8} />}
             {isOllamaMode
               ? `Ollama · ${aiSettings.model}`
-              : isLocalMode
-              ? `Self-hosted GGUF · ${localModelLabel}`
               : isCloudMode
               ? `${providerName} · ${aiSettings.model}`
               : isAgentMode
@@ -325,14 +319,10 @@ export function AIChat() {
           <div style={{ fontSize: 10, color: '#96a1b2', marginBottom: 8, padding: '4px 8px', background: '#1e232b', borderRadius: 4, border: '1px solid #303744' }}>
             {isOllamaMode
               ? `Agent + Ollama (${aiSettings.model}) — full AI`
-              : isLocalMode
-              ? `Agent + self-hosted GGUF (${localModelLabel}) — direct local AI`
               : isCloudMode
               ? `Agent + ${providerName} (${aiSettings.model}) — full AI`
               : isAgentMode
-              ? isLocalProvider
-                ? 'Agent running — set a GGUF file path and Flint will route prompts to the local self-hosted model'
-                : isApiProvider
+              ? isApiProvider
                 ? `Agent running — add API key + model for ${providerName}`
                 : `Agent running — no Ollama. Install: ollama pull llama3.2`
               : 'Agent offline — use Settings > Check connection'}
@@ -357,30 +347,6 @@ export function AIChat() {
                 onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { apiKey: e.target.value } })}
                 placeholder={aiSettings.provider === 'openai' ? 'sk-...' : aiSettings.provider === 'gemini' ? 'AIza...' : 'Provider API key'}
                 style={{ ...inputStyle, fontSize: 11 }} />
-            </ConfigField>
-          )}
-          {isLocalProvider && (
-            <ConfigField label="GGUF path">
-              <input type="text" value={aiSettings.localModelPath}
-                onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { localModelPath: e.target.value } })}
-                placeholder="/path/to/model.gguf"
-                style={{ ...inputStyle, fontSize: 11 }} />
-            </ConfigField>
-          )}
-          {isLocalProvider && (
-            <ConfigField label="Local ctx">
-              <input type="range" min={512} max={8192} step={256} value={aiSettings.localModelContext}
-                onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { localModelContext: parseInt(e.target.value) } })}
-                style={{ flex: 1, accentColor: '#666' }} />
-              <span style={{ fontSize: 10, color: '#555', width: 44, textAlign: 'right' }}>{aiSettings.localModelContext}</span>
-            </ConfigField>
-          )}
-          {isLocalProvider && (
-            <ConfigField label="Threads">
-              <input type="range" min={1} max={16} step={1} value={aiSettings.localModelThreads}
-                onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { localModelThreads: parseInt(e.target.value) } })}
-                style={{ flex: 1, accentColor: '#666' }} />
-              <span style={{ fontSize: 10, color: '#555', width: 24, textAlign: 'right' }}>{aiSettings.localModelThreads}</span>
             </ConfigField>
           )}
           {aiSettings.provider === 'openai-compatible' && (

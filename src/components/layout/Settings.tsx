@@ -18,10 +18,8 @@ export function SettingsPanel() {
   const [refreshing, setRefreshing] = useState(false);
   
   const isCredentialProvider = state.aiSettings.provider === 'openai' || state.aiSettings.provider === 'gemini' || state.aiSettings.provider === 'openai-compatible';
-  const isLocalProvider = state.aiSettings.provider === 'local-gguf';
   const isApiProvider = isCredentialProvider;
   const isOpenAICompatible = state.aiSettings.provider === 'openai-compatible';
-  const localModelLabel = state.aiSettings.localModelPath.split(/[\\/]/).pop() || 'model.gguf';
 
 
 
@@ -392,10 +390,6 @@ export function SettingsPanel() {
                     ? `Agent running. Found ${models.length} model${models.length !== 1 ? 's' : ''}: ${models.slice(0, 3).join(', ')}${models.length > 3 ? '...' : ''}`
                     : state.aiSettings.provider === 'ollama' && ollamaStatus === 'disconnected'
                     ? 'Agent running but Ollama not found. Start with: ollama serve'
-                    : isLocalProvider
-                    ? state.aiSettings.localModelPath
-                      ? `Agent running. Flint will send prompts directly to the self-hosted GGUF runtime for ${localModelLabel}.`
-                      : 'Agent running. Set a local GGUF model path to use your downloaded model directly through the self-hosted agent.'
                     : state.aiSettings.provider === 'ollama'
                     ? 'Checking connection...'
                     : 'Agent running. Requests will use your selected API provider and key.'}
@@ -456,26 +450,6 @@ export function SettingsPanel() {
                 </SettingRow>
               )}
 
-              {isLocalProvider && (
-                <>
-                  <SettingRow icon={<FolderOpen size={14} />} label="GGUF model path">
-                    <input type="text" value={state.aiSettings.localModelPath}
-                      onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { localModelPath: e.target.value } })}
-                      placeholder="/path/to/model.gguf"
-                      style={{ flex: 1, background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: 4, padding: '5px 8px', color: '#aaa', fontSize: 12, outline: 'none' }} />
-                  </SettingRow>
-                  <SettingRow icon={<Hash size={14} />} label="Local context" value={`${state.aiSettings.localModelContext}`}>
-                    <input type="range" min={512} max={8192} step={256} value={state.aiSettings.localModelContext}
-                      onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { localModelContext: parseInt(e.target.value) } })}
-                      style={{ flex: 1, accentColor: '#666' }} />
-                  </SettingRow>
-                  <SettingRow icon={<Hash size={14} />} label="Local threads" value={`${state.aiSettings.localModelThreads}`}>
-                    <input type="range" min={1} max={16} step={1} value={state.aiSettings.localModelThreads}
-                      onChange={e => dispatch({ type: 'UPDATE_AI_SETTINGS', payload: { localModelThreads: parseInt(e.target.value) } })}
-                      style={{ flex: 1, accentColor: '#666' }} />
-                  </SettingRow>
-                </>
-              )}
 
               <SettingRow icon={<Brain size={14} />} label="Model">
                 <div className="flex items-center gap-2" style={{ flex: 1 }}>
@@ -537,8 +511,7 @@ export function SettingsPanel() {
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#555', marginBottom: 6 }}>How Flint AI works</div>
                 <div style={{ fontSize: 10, color: '#3a3a3a', lineHeight: 1.6 }}>
                   • Builds responses from your <strong style={{ color: '#555' }}>note memory + graph links</strong><br />
-                  • Works with <strong style={{ color: '#555' }}>Ollama, local GGUF files, OpenAI, Gemini, and OpenAI-compatible APIs</strong><br />
-                  • Use tiny local models (MB-scale GGUF) by setting a small model path + lower output tokens<br />
+                  • Works with <strong style={{ color: '#555' }}>Ollama, OpenAI, Gemini, and OpenAI-compatible APIs</strong><br />
                   • Paste your API key in settings when using cloud providers<br />
                   • Requests are routed through the local <strong style={{ color: '#555' }}>Python agent</strong><br />
                   • Uses your <strong style={{ color: '#555' }}>notes as memory</strong> — builds context from note content<br />

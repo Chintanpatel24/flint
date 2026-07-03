@@ -8,15 +8,16 @@ $RepoArchiveUrl = "https://github.com/$RepoOwner/$RepoName/archive/refs/heads/$R
 $FlintHome = if ($env:FLINT_HOME) { $env:FLINT_HOME } else { Join-Path $env:USERPROFILE ".flint" }
 $FlintApp = Join-Path $FlintHome "app"
 $FlintBin = Join-Path $FlintHome "bin"
+$FlintVenv = Join-Path $FlintHome "venv"
 $SourceCache = Join-Path $FlintHome "source"
 $BuildDir = Join-Path $FlintHome ".build"
 
 function Write-Step($Index, $Text) {
-  Write-Host "[$Index/8] $Text"
+  Write-Host "[$Index/8] $Text" -ForegroundColor Cyan
 }
 
 function Write-Ok($Text) {
-  Write-Host "      OK  $Text"
+  Write-Host "      OK  $Text" -ForegroundColor Green
 }
 
 function Write-Warn($Text) {
@@ -29,6 +30,15 @@ function Fail($Text) {
 
 function Test-Command($Name) {
   return $null -ne (Get-Command $Name -ErrorAction SilentlyContinue)
+}
+
+function Ask-User($Prompt, $Default) {
+  $choices = if ($Default -eq "y") { "Y/n" } else { "y/N" }
+  $response = Read-Host "      $Prompt [$choices]"
+  if ([string]::IsNullOrWhiteSpace($response)) {
+    $response = $Default
+  }
+  return $response -match "^[Yy]$"
 }
 
 function Copy-DirectoryContents($Source, $Destination) {
@@ -64,10 +74,10 @@ Write-Ok "npm $((& npm -v).Trim())"
 
 Write-Step 2 "Checking Python"
 $PythonCmd = $null
-if (Test-Command "python3") {
-  $PythonCmd = "python3"
-} elseif (Test-Command "python") {
+if (Test-Command "python") {
   $PythonCmd = "python"
+} elseif (Test-Command "python3") {
+  $PythonCmd = "python3"
 }
 
 if ($PythonCmd) {
@@ -94,6 +104,7 @@ if ($LocalSource) {
   $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("flint-install-" + [System.Guid]::NewGuid().ToString("N"))
   $Archive = Join-Path $TempDir "flint.zip"
   New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
+  Write-Host "      Downloading source..."
   Invoke-WebRequest -Uri $RepoArchiveUrl -OutFile $Archive
   Expand-Archive -LiteralPath $Archive -DestinationPath $TempDir -Force
   $Expanded = Get-ChildItem -Directory -LiteralPath $TempDir | Where-Object { $_.Name -like "$RepoName-*" } | Select-Object -First 1
@@ -106,7 +117,6 @@ if ($LocalSource) {
 }
 
 Write-Step 4 "Preparing installation"
-Remove-Item -Recurse -Force -LiteralPath $FlintApp -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force -LiteralPath $BuildDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $FlintApp, $FlintBin, $BuildDir | Out-Null
 Write-Ok "Install directory ready at $FlintHome"
@@ -115,6 +125,7 @@ Write-Step 5 "Building Flint"
 Copy-DirectoryContents $SourceCache $BuildDir
 Push-Location $BuildDir
 try {
+  Write-Host "      Installing frontend dependencies (may take 1-2 mins)..."
   if (Test-Path "package-lock.json") {
     & npm ci --loglevel=error
     if ($LASTEXITCODE -ne 0) {
@@ -125,6 +136,7 @@ try {
     & npm install --loglevel=error
     if ($LASTEXITCODE -ne 0) { Fail "npm install failed." }
   }
+  Write-Host "      Building React app..."
   & npm run build
   if ($LASTEXITCODE -ne 0) { Fail "npm run build failed." }
 } finally {
@@ -135,35 +147,65 @@ if (-not (Test-Path (Join-Path $BuildDir "dist\index.html"))) {
 }
 Write-Ok "Frontend build complete"
 
-Write-Step 6 "Installing AI agent files"
-$AgentHome = Join-Path $FlintHome "agent"
-$AgentApp = Join-Path $FlintApp "agent"
-Remove-Item -Recurse -Force -LiteralPath $AgentHome, $AgentApp -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force -Path $AgentHome, $AgentApp | Out-Null
-$BuildAgent = Join-Path $BuildDir "agent"
-if (Test-Path $BuildAgent) {
-  Copy-Item -Path (Join-Path $BuildAgent "*") -Destination $AgentHome -Recurse -Force
-  Copy-Item -Path (Join-Path $BuildAgent "*") -Destination $AgentApp -Recurse -Force
-  Write-Ok "Agent files copied"
+Write-Step 6 "Installing AI agent"
+if (-not $PythonCmd) {
+  Write-Warn "Python not found, skipping agent installation."
 } else {
-  Write-Warn "No agent directory found in source."
-}
-if ($PythonCmd -and (Test-Path (Join-Path $AgentHome "requirements.txt"))) {
-  & $PythonCmd -m pip install --user -q -r (Join-Path $AgentHome "requirements.txt")
-  if ($LASTEXITCODE -ne 0) {
-    Write-Warn "Python packages were not installed. The app still opens; install agent requirements manually for AI."
+  if (Ask-User "Install local AI agent (requires Python)?" "y") {
+    $AgentHome = Join-Path $FlintHome "agent"
+    $AgentApp = Join-Path $FlintApp "agent"
+    Remove-Item -Recurse -Force -LiteralPath $AgentHome, $AgentApp -ErrorAction SilentlyContinue
+    New-Item -ItemType Directory -Force -Path $AgentHome, $AgentApp | Out-Null
+    $BuildAgent = Join-Path $BuildDir "agent"
+    if (Test-Path $BuildAgent) {
+      Copy-Item -Path (Join-Path $BuildAgent "*") -Destination $AgentHome -Recurse -Force
+      Copy-Item -Path (Join-Path $BuildAgent "*") -Destination $AgentApp -Recurse -Force
+      Write-Ok "Agent files copied"
+
+      if (Test-Path (Join-Path $AgentHome "requirements.txt")) {
+        Write-Host "      Creating Python virtual environment..."
+        & $PythonCmd -m venv $FlintVenv
+        $VenvPip = Join-Path $FlintVenv "Scripts\pip.exe"
+        if (-not (Test-Path $VenvPip)) {
+          $VenvPip = Join-Path $FlintVenv "bin\pip"
+        }
+
+        Write-Host "      Installing agent requirements..."
+        & $VenvPip install -q -r (Join-Path $AgentHome "requirements.txt")
+        if ($LASTEXITCODE -ne 0) {
+          Write-Warn "Python packages were not installed. Install requirements manually for AI."
+        } else {
+          Write-Ok "Agent dependencies installed"
+        }
+      }
+    } else {
+      Write-Warn "No agent directory found in source."
+    }
+  } else {
+    Write-Ok "Skipping AI agent installation"
   }
 }
 
 Write-Step 7 "Installing desktop app"
+$InstallElectron = $true
+$ElectronCmd = Join-Path $FlintApp "node_modules\.bin\electron.cmd"
+if (Test-Path $ElectronCmd) {
+  if (-not (Ask-User "Electron is already installed. Reinstall it?" "n")) {
+    $InstallElectron = $false
+    Write-Ok "Using existing Electron installation"
+  }
+}
+
 Copy-Item -LiteralPath (Join-Path $BuildDir "electron\main.cjs") -Destination (Join-Path $FlintApp "main.cjs") -Force
+Remove-Item -Recurse -Force -LiteralPath (Join-Path $FlintApp "dist") -ErrorAction SilentlyContinue
 Copy-Item -LiteralPath (Join-Path $BuildDir "dist") -Destination (Join-Path $FlintApp "dist") -Recurse -Force
 $LogoIco = Join-Path $BuildDir "public\flint-logo.ico"
 if (Test-Path $LogoIco) {
   Copy-Item -LiteralPath $LogoIco -Destination (Join-Path $FlintApp "icon.ico") -Force
 }
 
-$DesktopPackage = @"
+if ($InstallElectron) {
+  $DesktopPackage = @"
 {
   "name": "flint-desktop",
   "version": "2.1.0",
@@ -174,18 +216,21 @@ $DesktopPackage = @"
   }
 }
 "@
-Set-Content -LiteralPath (Join-Path $FlintApp "package.json") -Value $DesktopPackage -Encoding UTF8
-Push-Location $FlintApp
-try {
-  & npm install --omit=optional --loglevel=error
-  if ($LASTEXITCODE -ne 0) { Fail "Electron install failed. Flint must run as a desktop app, so no localhost fallback was created." }
-} finally {
-  Pop-Location
+  Set-Content -LiteralPath (Join-Path $FlintApp "package.json") -Value $DesktopPackage -Encoding UTF8
+  Push-Location $FlintApp
+  try {
+    Write-Host "      Installing Electron runtime (may take 1-2 mins, ~100MB download)..."
+    & npm install --omit=optional --loglevel=error
+    if ($LASTEXITCODE -ne 0) { Fail "Electron install failed." }
+  } finally {
+    Pop-Location
+  }
 }
-if (-not (Test-Path (Join-Path $FlintApp "node_modules\.bin\electron.cmd"))) {
-  Fail "Electron was not installed. Flint must run as a desktop app, so no localhost fallback was created."
+
+if (-not (Test-Path $ElectronCmd)) {
+  Fail "Electron was not installed. Flint must run as a desktop app."
 }
-Write-Ok "Electron desktop runtime installed"
+Write-Ok "Electron desktop runtime ready"
 
 Write-Step 8 "Creating launchers"
 $Launcher = Join-Path $FlintBin "flint.cmd"
@@ -200,17 +245,22 @@ if not exist "%FLINT_APP%\node_modules\.bin\electron.cmd" (
 "@
 Set-Content -LiteralPath $Launcher -Value $LauncherBody -Encoding ASCII
 
+$VenvPython = Join-Path $FlintVenv "Scripts\python.exe"
+if (-not (Test-Path $VenvPython)) {
+  $VenvPython = Join-Path $FlintVenv "bin\python"
+}
+if (-not (Test-Path $VenvPython)) {
+  $VenvPython = $PythonCmd
+}
+
 $AgentLauncher = Join-Path $FlintBin "flint-agent.cmd"
 $AgentLauncherBody = @"
 @echo off
-set "PYTHON_CMD="
-where python3 >nul 2>&1 && set "PYTHON_CMD=python3"
-if not defined PYTHON_CMD where python >nul 2>&1 && set "PYTHON_CMD=python"
-if not defined PYTHON_CMD (
-  echo Python 3 is required for the Flint AI agent. 1>&2
+if not exist "$VenvPython" (
+  echo Python environment is missing. Reinstall Flint. 1>&2
   exit /b 1
 )
-%PYTHON_CMD% "$AgentHome\agent.py" %*
+"$VenvPython" "$AgentHome\agent.py" %*
 "@
 Set-Content -LiteralPath $AgentLauncher -Value $AgentLauncherBody -Encoding ASCII
 

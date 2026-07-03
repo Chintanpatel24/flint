@@ -3,8 +3,15 @@ Flint AI Agent — Local Python Agent with Ollama + Web Search + Note Memory
 Runs on http://localhost:5100
 """
 
-import json
+import sys
 import os
+
+if sys.stdout is None:
+    sys.stdout = open(os.devnull, "w")
+if sys.stderr is None:
+    sys.stderr = open(os.devnull, "w")
+
+import json
 import time
 import threading
 import requests
@@ -17,18 +24,6 @@ CORS(app, origins="*")
 OLLAMA_URL = "http://127.0.0.1:11434"
 AGENT_PORT = 5100
 
-try:
-    from llama_cpp import Llama
-except Exception:
-    Llama = None
-
-LOCAL_MODEL_CACHE = {
-    "path": None,
-    "ctx": None,
-    "threads": None,
-    "llm": None,
-}
-LOCAL_MODEL_LOCK = threading.Lock()
 
 
 # ── Health Check ──────────────────────────────────────────────
@@ -296,63 +291,6 @@ def call_claude(api_key, model, system_content, history, query, temperature, max
     return text or ""
 
 
-def get_local_llm(model_path, n_ctx, n_threads):
-    if Llama is None:
-        raise RuntimeError("llama-cpp-python is not installed. Run: pip install llama-cpp-python")
-    if not model_path:
-        raise RuntimeError("Local model path is empty")
-    if not os.path.exists(model_path):
-        raise RuntimeError(f"Local model not found: {model_path}")
-
-    with LOCAL_MODEL_LOCK:
-        if (
-            LOCAL_MODEL_CACHE["llm"] is not None
-            and LOCAL_MODEL_CACHE["path"] == model_path
-            and LOCAL_MODEL_CACHE["ctx"] == n_ctx
-            and LOCAL_MODEL_CACHE["threads"] == n_threads
-        ):
-            return LOCAL_MODEL_CACHE["llm"]
-
-        llm = Llama(
-            model_path=model_path,
-            n_ctx=max(512, int(n_ctx)),
-            n_threads=max(1, int(n_threads)),
-            verbose=False,
-        )
-        LOCAL_MODEL_CACHE["path"] = model_path
-        LOCAL_MODEL_CACHE["ctx"] = n_ctx
-        LOCAL_MODEL_CACHE["threads"] = n_threads
-        LOCAL_MODEL_CACHE["llm"] = llm
-        return llm
-
-
-def call_local_gguf(model_path, messages, temperature, max_tokens, n_ctx, n_threads):
-    llm = get_local_llm(model_path, n_ctx, n_threads)
-
-    prompt_parts = []
-    for msg in messages[-12:]:
-        role = msg.get("role", "user")
-        content = msg.get("content", "")
-        if not content:
-            continue
-        if role == "system":
-            prompt_parts.append(f"System:\n{content}")
-        elif role == "assistant":
-            prompt_parts.append(f"Assistant:\n{content}")
-        else:
-            prompt_parts.append(f"User:\n{content}")
-    prompt_parts.append("Assistant:\n")
-    prompt = "\n\n".join(prompt_parts)
-
-    out = llm(
-        prompt,
-        max_tokens=max(32, int(max_tokens)),
-        temperature=max(0.0, min(float(temperature), 1.2)),
-        top_p=0.9,
-        repeat_penalty=1.05,
-        stop=["\nUser:", "\nSystem:"],
-    )
-    return out.get("choices", [{}])[0].get("text", "").strip()
 
 
 # ── Memory Builder ────────────────────────────────────────────
@@ -703,17 +641,6 @@ def chat():
                 text = data.get("message", {}).get("content", "")
                 return Response(stream_edit_plan(text, True), mimetype="text/event-stream")
 
-            if provider == "local-gguf":
-                text = call_local_gguf(
-                    model_path=local_model_path,
-                    messages=messages,
-                    temperature=min(temperature, 0.35),
-                    max_tokens=min(max_output_tokens, 320),
-                    n_ctx=local_model_context,
-                    n_threads=local_model_threads,
-                )
-                return Response(stream_edit_plan(text, True), mimetype="text/event-stream")
-
             if provider in ("openai", "openai-compatible"):
                 text = call_openai_compatible(provider, api_key, api_base_url, model, messages, min(temperature, 0.3), max_output_tokens)
                 return Response(stream_edit_plan(text, True), mimetype="text/event-stream")
@@ -793,29 +720,6 @@ def chat():
 
         return Response(stream_external(), mimetype="text/event-stream")
 
-    if provider == "local-gguf":
-        def stream_local_model():
-            try:
-                response_text = call_local_gguf(
-                    model_path=local_model_path,
-                    messages=messages,
-                    temperature=min(temperature, 0.45),
-                    max_tokens=max_output_tokens,
-                    n_ctx=local_model_context,
-                    n_threads=local_model_threads,
-                )
-                concise_text = response_text.strip() or concise_note_reply(notes, query, active_note_id, memory, max_context)
-                for chunk in stream_text_chunks(concise_text):
-                    yield chunk
-                yield f"data: {json.dumps({'done': True, 'usedOllama': True})}\n\n"
-            except Exception as e:
-                fallback = concise_note_reply(notes, query, active_note_id, memory, max_context)
-                fallback += f"\n\n*Local model error: {str(e)}*"
-                for chunk in stream_text_chunks(fallback):
-                    yield chunk
-                yield f"data: {json.dumps({'done': True, 'error': str(e), 'usedOllama': False})}\n\n"
-
-        return Response(stream_local_model(), mimetype="text/event-stream")
 
     def stream_ollama():
         try:
