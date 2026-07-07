@@ -1,0 +1,49 @@
+{
+  "common": {
+    "newNote": "New Note",
+    "newFolder": "New Folder",
+    "search": "Search",
+    "settings": "Settings",
+    "graph": "Graph",
+    "canvas": "Canvas",
+    "dailyNote": "Daily Note",
+    "aiChat": "Flint AI",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "rename": "Rename",
+    "cancel": "Cancel",
+    "backlinks": "Backlinks",
+    "outgoing": "Outgoing",
+    "outline": "Outline",
+    "edit": "Edit",
+    "preview": "Preview",
+    "split": "Split",
+    "noNoteSelected": "Select a note",
+    "toggleSidebar": "Toggle Sidebar",
+    "toggleRightPanel": "Toggle Right Panel"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "appearance": "Appearance",
+    "editor": "Editor",
+    "language": "Language",
+    "theme": "Theme",
+    "fontSize": "Font Size",
+    "dailyNoteTemplate": "Daily Note Template"
+  },
+  "sidebar": {
+    "pinned": "Pinned",
+    "folders": "Folders",
+    "tags": "Tags",
+    "calendar": "Calendar"
+  },
+  "command": {
+    "palette": "Command Palette",
+    "typeCommand": "Type a command...",
+    "openGraph": "Open Graph View",
+    "openCanvas": "Open Canvas",
+    "openSettings": "Open Settings"
+  }
+}

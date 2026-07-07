@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from './store';
+import { useTranslation } from 'react-i18next';
 import { Sidebar } from './components/layout/Sidebar';
 import { TabBar } from './components/layout/TabBar';
 import { Editor } from './components/editor/Editor';
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 
 function AppContent() {
+  const { t } = useTranslation();
   const { state, dispatch, createNote, openDailyNote } = useStore();
   const { activeNoteId, secondaryNoteId, viewMode, showGraphView, showCanvasView, showSearch, showCommandPalette, showQuickSwitcher, sidebarOpen, rightPanelOpen, activeVaultId, settingsOpen, showAIChat } = state;
 
@@ -54,15 +56,15 @@ function AppContent() {
         <div className="flex flex-col items-center py-4 gap-4 shrink-0 w-12 bg-[#080808] border-r border-[#1a1a1a]">
           <FlintLogo size={20} />
           <div className="flex-1 flex flex-col items-center gap-2">
-            <RibbonBtn icon={<PanelLeftOpen size={16} />} active={sidebarOpen} onClick={() => dispatch({ type: 'TOGGLE_SIDEBAR' })} />
-            <RibbonBtn icon={<Search size={16} />} onClick={() => dispatch({ type: 'TOGGLE_SEARCH' })} />
-            <RibbonBtn icon={<Plus size={16} />} onClick={() => createNote()} />
-            <RibbonBtn icon={<CalendarDays size={16} />} onClick={() => openDailyNote()} />
-            <RibbonBtn icon={<Waypoints size={16} />} active={showGraphView} onClick={() => dispatch({ type: 'TOGGLE_GRAPH_VIEW' })} />
-            <RibbonBtn icon={<LayoutGrid size={16} />} active={showCanvasView} onClick={() => dispatch({ type: 'TOGGLE_CANVAS_VIEW' })} />
-            <RibbonBtn icon={<Brain size={16} />} active={showAIChat} onClick={() => dispatch({ type: 'TOGGLE_AI_CHAT' })} />
+            <RibbonBtn icon={<PanelLeftOpen size={16} />} active={sidebarOpen} onClick={() => dispatch({ type: 'TOGGLE_SIDEBAR' })} title={t('common.toggleSidebar')} />
+            <RibbonBtn icon={<Search size={16} />} onClick={() => dispatch({ type: 'TOGGLE_SEARCH' })} title={t('common.search')} />
+            <RibbonBtn icon={<Plus size={16} />} onClick={() => createNote()} title={t('common.newNote')} />
+            <RibbonBtn icon={<CalendarDays size={16} />} onClick={() => openDailyNote()} title={t('common.dailyNote')} />
+            <RibbonBtn icon={<Waypoints size={16} />} active={showGraphView} onClick={() => dispatch({ type: 'TOGGLE_GRAPH_VIEW' })} title={t('common.graph')} />
+            <RibbonBtn icon={<LayoutGrid size={16} />} active={showCanvasView} onClick={() => dispatch({ type: 'TOGGLE_CANVAS_VIEW' })} title={t('common.canvas')} />
+            <RibbonBtn icon={<Brain size={16} />} active={showAIChat} onClick={() => dispatch({ type: 'TOGGLE_AI_CHAT' })} title={t('common.aiChat')} />
           </div>
-          <RibbonBtn icon={<Settings size={16} />} onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })} />
+          <RibbonBtn icon={<Settings size={16} />} onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })} title={t('common.settings')} />
         </div>
 
         {/* Sidebar */}
@@ -103,12 +105,13 @@ function AppContent() {
 }
 
 function NotePane({ noteId, isSplit, onToggleSplit, isSecondary, onClose }: { noteId: string | null; isSplit?: boolean; onToggleSplit?: () => void; isSecondary?: boolean; onClose?: () => void }) {
+  const { t } = useTranslation();
   const { state, dispatch, createNote } = useStore();
   const activeNote = state.notes.find(n => n.id === noteId);
   const { viewMode } = state;
 
   if (!noteId || !activeNote) return (
-    <div className="flex-1 flex items-center justify-center bg-black text-[#222]">Select a note</div>
+    <div className="flex-1 flex items-center justify-center bg-black text-[#222]">{t('common.noNoteSelected')}</div>
   );
 
   return (
@@ -120,9 +123,9 @@ function NotePane({ noteId, isSplit, onToggleSplit, isSecondary, onClose }: { no
           {onToggleSplit && <button onClick={onToggleSplit} className={`p-1 rounded ${isSplit ? 'text-[#4a9eff]' : 'text-[#333]'}`}><Columns2 size={14}/></button>}
           {isSecondary && <button onClick={onClose} className="text-[#333]"><X size={14}/></button>}
           <div className="w-[1px] h-4 bg-[#1a1a1a] mx-1" />
-          <button onClick={() => dispatch({ type: 'SET_VIEW_MODE', payload: 'edit' })} className={`text-[10px] uppercase font-bold px-2 ${viewMode==='edit'?'text-[#888]':'text-[#333]'}`}>Edit</button>
-          <button onClick={() => dispatch({ type: 'SET_VIEW_MODE', payload: 'preview' })} className={`text-[10px] uppercase font-bold px-2 ${viewMode==='preview'?'text-[#888]':'text-[#333]'}`}>Preview</button>
-          <button onClick={() => dispatch({ type: 'SET_VIEW_MODE', payload: 'split' })} className={`text-[10px] uppercase font-bold px-2 ${viewMode==='split'?'text-[#888]':'text-[#333]'}`}>Both</button>
+          <button onClick={() => dispatch({ type: 'SET_VIEW_MODE', payload: 'edit' })} className={`text-[10px] uppercase font-bold px-2 ${viewMode==='edit'?'text-[#888]':'text-[#333]'}`}>{t('common.edit')}</button>
+          <button onClick={() => dispatch({ type: 'SET_VIEW_MODE', payload: 'preview' })} className={`text-[10px] uppercase font-bold px-2 ${viewMode==='preview'?'text-[#888]':'text-[#333]'}`}>{t('common.preview')}</button>
+          <button onClick={() => dispatch({ type: 'SET_VIEW_MODE', payload: 'split' })} className={`text-[10px] uppercase font-bold px-2 ${viewMode==='split'?'text-[#888]':'text-[#333]'}`}>{t('common.split')}</button>
         </div>
       </div>
 
@@ -140,9 +143,9 @@ function NotePane({ noteId, isSplit, onToggleSplit, isSecondary, onClose }: { no
   );
 }
 
-function RibbonBtn({ icon, onClick, active }: { icon: React.ReactNode; onClick: () => void; active?: boolean }) {
+function RibbonBtn({ icon, onClick, active, title }: { icon: React.ReactNode; onClick: () => void; active?: boolean; title?: string }) {
   return (
-    <button onClick={onClick} className={`p-2 rounded-lg transition-colors ${active ? 'bg-[#111] text-[#4a9eff]' : 'text-[#333] hover:text-[#888]'}`}>
+    <button onClick={onClick} title={title} className={`p-2 rounded-lg transition-colors ${active ? 'bg-[#111] text-[#4a9eff]' : 'text-[#333] hover:text-[#888]'}`}>
       {icon}
     </button>
   );

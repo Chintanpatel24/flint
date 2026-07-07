@@ -1,0 +1,49 @@
+{
+  "common": {
+    "newNote": "Новая заметка",
+    "newFolder": "Новая папка",
+    "search": "Поиск",
+    "settings": "Настройки",
+    "graph": "Граф",
+    "canvas": "Холст",
+    "dailyNote": "Ежедневник",
+    "aiChat": "Flint AI",
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "rename": "Переименовать",
+    "cancel": "Отмена",
+    "backlinks": "Обратные ссылки",
+    "outgoing": "Исходящие ссылки",
+    "outline": "Структура",
+    "edit": "Правка",
+    "preview": "Просмотр",
+    "split": "Разделение",
+    "noNoteSelected": "Выберите заметку",
+    "toggleSidebar": "Свернуть/развернуть панель",
+    "toggleRightPanel": "Свернуть/развернуть правую панель"
+  },
+  "settings": {
+    "title": "Настройки",
+    "general": "Общие",
+    "appearance": "Внешний вид",
+    "editor": "Редактор",
+    "language": "Язык",
+    "theme": "Тема",
+    "fontSize": "Размер шрифта",
+    "dailyNoteTemplate": "Шаблон ежедневной заметки"
+  },
+  "sidebar": {
+    "pinned": "Закрепленные",
+    "folders": "Папки",
+    "tags": "Теги",
+    "calendar": "Календарь"
+  },
+  "command": {
+    "palette": "Командная палитра",
+    "typeCommand": "Введите команду...",
+    "openGraph": "Открыть граф",
+    "openCanvas": "Открыть холст",
+    "openSettings": "Открыть настройки"
+  }
+}

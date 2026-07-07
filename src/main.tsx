@@ -1,26 +1,11 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import App from "./App";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+import './i18n/config';
 
-try {
-  const raw = localStorage.getItem('flint-settings');
-  if (raw) {
-    const parsed = JSON.parse(raw);
-    if (parsed?.theme) {
-      const themeMap: Record<string, string> = {
-        graphite: 'dark',
-        sunset: 'amber',
-      };
-      document.body.dataset.theme = themeMap[parsed.theme] || parsed.theme;
-    }
-  }
-} catch {
-  // Ignore malformed local settings
-}
-
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <App />
-  </StrictMode>
+  </React.StrictMode>
 );
